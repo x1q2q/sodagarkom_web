@@ -29,13 +29,6 @@ function data() {
     closeSideMenu() {
       this.isSideMenuOpen = false
     },
-    isNotificationsMenuOpen: false,
-    toggleNotificationsMenu() {
-      this.isNotificationsMenuOpen = !this.isNotificationsMenuOpen
-    },
-    closeNotificationsMenu() {
-      this.isNotificationsMenuOpen = false
-    },
     isProfileMenuOpen: false,
     toggleProfileMenu() {
       this.isProfileMenuOpen = !this.isProfileMenuOpen
@@ -48,15 +41,5 @@ function data() {
       this.isPagesMenuOpen = !this.isPagesMenuOpen
     },
     // Modal
-    isModalOpen: false,
-    trapCleanup: null,
-    openModal() {
-      this.isModalOpen = true
-      this.trapCleanup = focusTrap(document.querySelector('#modal'))
-    },
-    closeModal() {
-      this.isModalOpen = false
-      this.trapCleanup()
-    },
   }
 }
