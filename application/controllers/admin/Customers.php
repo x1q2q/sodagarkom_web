@@ -13,17 +13,15 @@ class Customers extends CI_Controller {
 				'menu_active'	=> 'customers',
 				'data'			=> json_encode($this->m_customers->get_all())
 		);
-		$this->load_templates($data);
-	}
-	public function get_data(){
-		echo json_encode($this->m_customers->get_all());
-	}
-	public function load_templates($data){
+		// $this->load_templates($data);
 		$this->load->view('admin/template/header',$data);
 		$this->load->view('admin/template/sidebar',$data);
 		$this->load->view('admin/template/navbar',$data);
 		$this->load->view('admin/template/content',$data);
 		$this->load->view('admin/template/footer',$data);
+	}
+	protected function load_templates($data){
+		
 	}
 
 	public function validate_duplicate($field, $value){
@@ -84,7 +82,7 @@ class Customers extends CI_Controller {
 			}
 		}else{
 			return $this->output->set_content_type('application/json')
-		        ->set_output(json_encode(array('code' => 400, 'status' => 'error','message' => 'Kolom input masih ada yang kosong')));
+		        ->set_output(json_encode(array('code' => 400, 'status' => 'error','message' => 'Input field is empty')));
 		}
 
 		
@@ -123,7 +121,7 @@ class Customers extends CI_Controller {
 			}
 		}else{
 			return $this->output->set_content_type('application/json')
-		        ->set_output(json_encode(array('code' => 400, 'status' => 'error','message' => 'Kolom input masih ada yang kosong')));
+		        ->set_output(json_encode(array('code' => 400, 'status' => 'error','message' => 'Input field is empty')));
 		}
 	}
 	public function activate($id){
