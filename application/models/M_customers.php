@@ -13,6 +13,10 @@ class M_customers extends CI_Model {
 		$query = $this->db->insert($this->tabel_name,$data);
 		return $query;
 	}
+	public function update($data,$where){
+		$query = $this->db->update($this->tabel_name,$data,$where);
+		return $query;
+	}
 	public function delete($where){
 		$query = $this->db->delete($this->tabel_name,$where);
 		return $query;
@@ -23,8 +27,5 @@ class M_customers extends CI_Model {
 		$query = $this->db->get();
 		return $query;
 	}
-	public function update_data($data,$where){
-		$query = $this->db->update($this->tabel_name,$data,$where);
-		return $query;
-	}
+	
 }

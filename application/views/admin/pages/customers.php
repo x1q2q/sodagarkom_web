@@ -6,7 +6,11 @@
           isModalAddOpen:false,
           isModalDeleteOpen:false,
           isModalEditOpen:false,
-          isToastOpen: false,
+          toastResult:{
+            'status':'',
+            'message':'',
+            'isOpen':false
+          },
           dataEdit:{},
           closeModal(typeModal){
             if(typeModal == 'add'){
@@ -26,27 +30,48 @@
               this.dataEdit.id = item
             }else if(item != null){
               this.isModalEditOpen=true
-              this.dataEdit=item
+              // use this inseatd of this.dataEdit = item, so we prevent from reactivitiy models 
+              // when user editing form edit data
+              this.dataEdit= {
+                id: item.id,
+                username: item.username,
+                email: item.email,
+                password: item.password,
+                full_name: item.full_name,
+                address: item.address,
+                phone: item.phone
+              }
             }       
           },
-           openToast() {
-              if (this.isToastOpen) return;
-              this.isToastOpen = true;
-
+          openToast(status, message) {
+              if (this.toastResult.isOpen) return;
+              this.toastResult.message = message;
+              this.toastResult.status = status;
+              this.toastResult.isOpen = true;
               clearTimeout(timer);
-
               timer = setTimeout(() => {
-                  this.isToastOpen = false;
+                  this.toastResult.isOpen = false;
               }, 5000);
           },
           closeToast() {
-              this.isToastOpen = false;
+              this.toastResult.isOpen = false;
           },
-          sendData(el){
-            console.log(el);
+          async activateCustomer(id){
+            await fetch('<?= base_url(); ?>admin/customers/activate/'+id, {
+                method: 'GET'
+              })
+              .then(response => response.json())
+              .then((result) => {
+                if(result.code == 200){
+                   this.openToast(result.status, result.message);
+                   setTimeout(() => {
+                       window.location.reload();
+                  }, 2000);
+                  
+                }                
+              });
           },
           async deleteCustomer(){
-            console.log(this.dataEdit.id);
             await fetch('<?= base_url(); ?>admin/customers/delete/'+this.dataEdit.id, {
                   method: 'GET',
                   headers: {
@@ -54,22 +79,20 @@
                     'Content-Type': 'application/json'
                   },
                 })
-                .then((resp) => {
-                  console.log(resp);
-                  if(resp.status == 200){
-                     this.closeModal('delete');
+              .then(response => response.json())
+              .then((result) => {
+                if(result.code == 200){
+                   this.closeModal('delete');
                      
-                     this.openToast();
+                     this.openToast(result.status, result.message);
                      setTimeout(() => {
                          window.location.reload();
-                    }, 1000);
-                    
-                  }else{
-                    this.closeModal('delete');
-                  }                 
-                });
+                    }, 2000);                  
+                }
+                 this.closeModal('delete');       
+              });
           },
-          customersForm() {
+          customersInsert() {
             return {
               formData: {
                 username: '',
@@ -79,7 +102,6 @@
                 address: '',
                 phone: '',
               },
-              message: '',
               loading:false,
               buttonLabel: 'Submit',
               async submitData() {
@@ -95,21 +117,61 @@
                   },
                   body: JSON.stringify(this.formData)
                 })
-                .then((resp) => {
-                  if(resp.status == 200){
+                .then(response => response.json())
+                .then((result) => {
+                  if(result.code == 200){
                      this.closeModal('add');
-                     this.openToast();
-                     window.location.reload();
+                     this.openToast(result.status, result.message);
+                     setTimeout(() => {
+                       window.location.reload();
+                    }, 2000);
                   }else{
                     this.closeModal('add');
-                  }                 
+                    this.openToast(result.status, result.message);
+                    this.loading=false;
+                    this.buttonLabel='Submit';
+                  }                  
+                });
+              }
+            }
+          },
+          customersUpdate() {
+            return {
+              loading:false,
+              buttonLabel: 'Update',
+              async updateData() {
+                this.loading=true;
+                this.buttonLabel="Updating ...";
+                this.message = '';
+
+                await fetch('<?= base_url(); ?>admin/customers/update/'+this.dataEdit.id, {
+                  method: 'POST',
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(this.dataEdit)
+                })
+                .then(response => response.json())
+                .then((result) => {
+                  if(result.code == 200){
+                     this.closeModal('edit');
+                     this.openToast(result.status, result.message);
+                     setTimeout(() => {
+                       window.location.reload();
+                    }, 2000);
+                  }else{
+                    this.closeModal('edit');
+                    this.openToast(result.status, result.message);
+                    this.loading=false;
+                    this.buttonLabel = 'Update';
+                  }
                 });
               }
             }
           }
       }));
   });
-
  
 //  Alpine JS datatable
 window.dataTable = function () {
@@ -266,7 +328,7 @@ window.dataTable = function () {
         class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
         role="dialog"
         id="modal-add"
-        action="<?= base_url('admin/customers/insert'); ?>" method="post" x-data="customersForm()"
+        x-data="customersInsert()"
         @submit.prevent="submitData" 
       >
         <div class="mt-4 mb-6">
@@ -277,37 +339,37 @@ window.dataTable = function () {
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Username</span>
               <input name="username" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama pengguna"
-              x-model="formData.username">
+              x-model="formData.username" required>
             </label>
 
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Password</span>
               <input name="password" type="password" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="***********"
-              x-model="formData.password">
+              x-model="formData.password" required>
             </label>
 
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Email</span>
               <input name="email" type="email" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="email"
-              x-model="formData.email">
+              x-model="formData.email" required>
             </label>
 
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Nama Lengkap</span>
               <input name="full_name" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama lengkap"
-              x-model="formData.full_name">
+              x-model="formData.full_name" required>
             </label>
 
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Alamat</span>
-              <textarea name="address" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="alamat lengkap, kecamatan, kabupaten" x-model="formData.address"></textarea>
+              <textarea name="address" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="alamat lengkap, kecamatan, kabupaten" x-model="formData.address" required></textarea>
             </label>
             
 
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">No. Telepon</span>
               <input name="phone" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="no. telepon"
-              x-model="formData.phone">
+              x-model="formData.phone" required>
             </label>
           </div>
         </div>
@@ -333,7 +395,7 @@ window.dataTable = function () {
     </div>
     <!-- End of modal add backdrop -->
 
-    <div
+    <form
       x-show="isModalEditOpen"
       x-transition:enter="transition ease-out duration-150"
       x-transition:enter-start="opacity-0"
@@ -342,6 +404,8 @@ window.dataTable = function () {
       x-transition:leave-start="opacity-100"
       x-transition:leave-end="opacity-0"
       class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
+      x-data="customersUpdate()"
+      @submit.prevent="updateData"
     >
       <!-- Modal -->
       <div
@@ -352,7 +416,6 @@ window.dataTable = function () {
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0  transform translate-y-1/2"
-        @click.away="closeModal('edit')"
         class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
         role="dialog"
         id="modal-edit"
@@ -364,7 +427,7 @@ window.dataTable = function () {
             <div class="mt-4">
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Username</span>
-              <input x-model="dataEdit.username" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama pengguna">
+              <input x-ref="dataEdit.username" x-model="dataEdit.username" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama pengguna">
             </label>
 
             <label class="block text-sm mt-2">
@@ -398,14 +461,16 @@ window.dataTable = function () {
           >
             Cancel
           </button>
-          <button
+          <button type="submit" 
             class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-teal-400 focus:outline-none focus:shadow-outline-purple"
+            :class="{ 'opacity-50 cursor-not-allowed': loading }"
+            x-text="buttonLabel" 
           >
             Update
           </button>
         </footer>
       </div>
-    </div>
+    </form>
     <!-- End of modal edit backdrop -->
 
 
@@ -462,14 +527,21 @@ window.dataTable = function () {
     </div>
     <!-- End of modal delete backdrop -->
 
-    <button type="button" @click="closeToast()" x-show="isToastOpen" x-transition.duration.300ms class="fixed  z-30 rounded-md bg-teal-500 px-4 py-2 text-white transition" style="bottom:1rem;right:3rem;">
-        <div class="flex items-center py-0 px-3">
-            <span class="text-2xl"><i class='bx bxs-check-circle'></i></span>
-            <p class="font-bold">Akun Berhasil diaktifkan!</p>
-        </div>
-    </button>
+<div x-show="toastResult.isOpen" x-transition.duration.500m 
+:class="toastResult.status == 'ok' ?  'bg-teal-500' : 'bg-red-600' " 
+class="fixed z-30 shadow rounded-md text-white transition text-sm" role="alert"
+style="right:2rem;top:5rem;width:25rem;">
+    <div class="flex justify-between items-center py-2 px-4">
+      <p class="font-semibold" x-text="toastResult.status"></p>
+        &nbsp;•
+      <p class="flex-1 font-semibold ml-2" x-text="toastResult.message">kolom input</p>
+      <button type="button" @click="closeToast()" class="inline-flex flex-shrink-0 justify-center items-center rounded-lg text-teal-800 opacity-50 hover:opacity-100 focus:outline-none focus:opacity-100">
+        <span class="text-2xl"><i class='bx bx-x'></i></span>
+      </button>
+    </div>
+  </div>
+  <!-- end of toast -->
 
-    <!-- end of toast -->
   <div class="container px-6 mx-auto">
     <div class="flex justify-between items-center">
       <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
@@ -559,7 +631,7 @@ window.dataTable = function () {
                 </span>
                 <template x-if="item.is_accepted == 0">
                   <div class="flex">
-                    <button @click="openToast()" class="flex-1 flex items-center justify-center mt-2 px-2 py-1 text-sm font-small leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-md active:bg-green-700 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
+                    <button @click="activateCustomer(item.id)" class="flex-1 flex items-center justify-center mt-2 px-2 py-1 text-sm font-small leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-md active:bg-green-700 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
                   <span class="text-1xl"><i class='bx bxs-check-circle'></i></span>
                     <span>Aktifkan</span>
                   </button>
