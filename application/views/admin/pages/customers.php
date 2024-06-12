@@ -2,323 +2,322 @@
 <script type="text/javascript">
  document.addEventListener('alpine:init', () => {
   let timer;
-      Alpine.data('app', () => ({
-          isModalAddOpen:false,
-          isModalDeleteOpen:false,
-          isModalEditOpen:false,
-          toastResult:{
-            'status':'',
-            'message':'',
-            'isOpen':false
-          },
-          dataEdit:{},
-          closeModal(typeModal){
-            if(typeModal == 'add'){
-              this.isModalAddOpen = false  
-            }else if(typeModal == 'delete'){
-              this.isModalDeleteOpen = false
-            }else{
-              this.isModalEditOpen=false
-              this.dataEdit={}
-            }
-          },
-          openModal(typeModal,item=null){
-            if(typeModal == 'add'){
-              this.isModalAddOpen = true 
-            }else if(typeModal == 'delete'){
-              this.isModalDeleteOpen = true
-              this.dataEdit.id = item
-            }else if(item != null){
-              this.isModalEditOpen=true
-              // use this inseatd of this.dataEdit = item, so we prevent from reactivitiy models 
-              // when user editing form edit data
-              this.dataEdit= {
-                id: item.id,
-                username: item.username,
-                email: item.email,
-                password: item.password,
-                full_name: item.full_name,
-                address: item.address,
-                phone: item.phone
-              }
-            }       
-          },
-          openToast(status, message) {
-              if (this.toastResult.isOpen) return;
-              this.toastResult.message = message;
-              this.toastResult.status = status;
-              this.toastResult.isOpen = true;
-              clearTimeout(timer);
-              timer = setTimeout(() => {
-                  this.toastResult.isOpen = false;
-              }, 5000);
-          },
-          closeToast() {
-            this.toastResult.isOpen = false;
-          },
-          async activateCustomer(id){
-            await fetch('<?= base_url(); ?>admin/customers/activate/'+id, {
-                method: 'GET'
-              })
-              .then(response => response.json())
-              .then((result) => {
-                if(result.code == 200){
-                   this.openToast(result.status, result.message);
-                   setTimeout(() => {
-                       window.location.reload();
-                  }, 2000);
-                  
-                }                
-              });
-          },
-          async deleteCustomer(){
-            await fetch('<?= base_url(); ?>admin/customers/delete/'+this.dataEdit.id, {
-                  method: 'GET',
-                  headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                  },
-                })
-              .then(response => response.json())
-              .then((result) => {
-                if(result.code == 200){
-                   this.closeModal('delete');
-                     
-                     this.openToast(result.status, result.message);
-                     setTimeout(() => {
-                         window.location.reload();
-                    }, 2000);                  
-                }
-                 this.closeModal('delete');       
-              });
-          },
-          customersInsert() {
-            return {
-              formData: {
-                username: '',
-                email: '',
-                password: '',
-                full_name: '',
-                address: '',
-                phone: '',
+  Alpine.data('app', () => ({
+      dataTB:  <?= $data; ?>,
+      isModalAddOpen:false,
+      isModalDeleteOpen:false,
+      isModalEditOpen:false,
+      toastResult:{
+        'status':'',
+        'message':'',
+        'isOpen':false
+      },
+      dataEdit:{},
+      closeModal(typeModal){
+        this.dataTB = [];
+        if(typeModal == 'add'){
+          this.isModalAddOpen = false  
+        }else if(typeModal == 'delete'){
+          this.isModalDeleteOpen = false
+        }else{
+          this.isModalEditOpen=false
+          this.dataEdit={}
+        }
+      },
+      openModal(typeModal,item=null){
+        if(typeModal == 'add'){
+          this.isModalAddOpen = true 
+        }else if(typeModal == 'delete'){
+          this.isModalDeleteOpen = true
+          this.dataEdit.id = item
+        }else if(item != null){
+          this.isModalEditOpen=true
+          // use this inseatd of this.dataEdit = item, so we prevent from reactivitiy models 
+          // when user editing form edit data
+          this.dataEdit= {
+            id: item.id,
+            username: item.username,
+            email: item.email,
+            password: item.password,
+            full_name: item.full_name,
+            address: item.address,
+            phone: item.phone
+          }
+        }       
+      },
+      openToast(status, message) {
+          if (this.toastResult.isOpen) return;
+          this.toastResult.message = message;
+          this.toastResult.status = status;
+          this.toastResult.isOpen = true;
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+              this.toastResult.isOpen = false;
+          }, 5000);
+      },
+      closeToast() {
+        this.toastResult.isOpen = false;
+      },
+      async activateCustomer(id){
+        await fetch('<?= base_url(); ?>admin/customers/activate/'+id, {
+            method: 'GET'
+          })
+          .then(response => response.json())
+          .then((result) => {
+            if(result.code == 200){
+               this.openToast(result.status, result.message);
+               setTimeout(() => {
+                   window.location.reload();
+              }, 2000);
+              
+            }                
+          });
+      },
+      async deleteCustomer(){
+        await fetch('<?= base_url(); ?>admin/customers/delete/'+this.dataEdit.id, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
               },
-              loading:false,
-              buttonLabel: 'Submit',
-              async submitData() {
-                this.loading=true;
-                this.buttonLabel="Submitting ...";
-
-                var result =  await fetch('<?= base_url(); ?>admin/customers/insert', {
-                  method: 'POST',
-                  headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(this.formData)
-                }).then(function(response){
-                  if(response.ok) return response.json()
-                  return Promise.reject(response);
-                }).catch((err) => {
-                    this.closeModal('add');
-                    this.openToast('error', 'Response error');
-                    this.loading=false;
-                    this.buttonLabel='Submit';
-                });
-
-                if(!result) return;
-
-                if(result.code == 200){
-                   this.closeModal('add');
-                   this.openToast(result.status, result.message);
-                   setTimeout(() => {
+            })
+          .then(response => response.json())
+          .then((result) => {
+            if(result.code == 200){
+               this.closeModal('delete');
+                 
+                 this.openToast(result.status, result.message);
+                 setTimeout(() => {
                      window.location.reload();
-                  }, 2000);
-                }else{
-                  this.closeModal('add');
-                  this.openToast(result.status, result.message);
-                  this.loading=false;
-                  this.buttonLabel='Submit';
+                }, 2000);                  
+            }
+             this.closeModal('delete');       
+          });
+      },
+      customersInsert() {
+        return {
+          formData: {
+            username: '',
+            email: '',
+            password: '',
+            full_name: '',
+            address: '',
+            phone: '',
+          },
+          loading:false,
+          buttonLabel: 'Submit',
+          async submitData() {
+            this.loading=true;
+            this.buttonLabel="Submitting ...";
+
+            var result =  await fetch('<?= base_url(); ?>admin/customers/insert', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(this.formData)
+            }).then(function(response){
+              if(response.ok) return response.json()
+              return Promise.reject(response);
+            }).catch((err) => {
+                this.closeModal('add');
+                this.openToast('error', 'Response error');
+                this.loading=false;
+                this.buttonLabel='Submit';
+            });
+
+            if(!result) return;
+
+            if(result.code == 200){
+               this.closeModal('add');
+               this.openToast(result.status, result.message);
+               setTimeout(() => {
+                 window.location.reload();
+              }, 2000);
+            }else{
+              this.closeModal('add');
+              this.openToast(result.status, result.message);
+              this.loading=false;
+              this.buttonLabel='Submit';
+            }
+          }
+        }
+      },
+      customersUpdate() {
+        return {
+          loading:false,
+          buttonLabel: 'Update',
+          async updateData() {
+            this.loading=true;
+            this.buttonLabel="Updating ...";
+            var result = await fetch('<?= base_url(); ?>admin/customers/update/'+this.dataEdit.id, {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(this.dataEdit)
+            }).then(function(response){
+              if(response.ok) return response.json()
+              return Promise.reject(response);
+            }).catch((err) => {
+                this.closeModal('edit');
+                this.openToast('error', 'Response error');
+                this.loading=false;
+                this.buttonLabel='Update';
+            });
+
+
+            if(!result) return;
+
+            if(result.code == 200){
+               this.closeModal('edit');
+               this.openToast(result.status, result.message);
+               setTimeout(() => {
+                 window.location.reload();
+              }, 2000);
+            }else{
+              this.closeModal('edit');
+              this.openToast(result.status, result.message);
+              this.loading=false;
+              this.buttonLabel = 'Update';
+            }
+          }
+        }
+      },
+      dataTable(){
+        return {
+          items: [],
+          view: 5,
+          searchInput: '',
+          pages: [],
+          offset: 10,
+          pagination: {
+            total: this.dataTB.length,
+            lastPage: Math.ceil(this.dataTB.length / 5),
+            perPage: 5,
+            currentPage: 1,
+            from: 1,
+            to: 1 * 5
+          },
+          currentPage: 1,
+          sorted: {
+            field: 'created_at',
+            rule: 'asc'
+          },
+          initData() {
+            this.items = this.dataTB.sort(this.compareOnKey('created_at', 'asc'))
+            this.showPages()
+          },
+          compareOnKey(key, rule) {
+            return function(a, b) { 
+              if (key === 'username' || key === 'email' || key === 'phone' || key === 'is_accepted') {
+                let comparison = 0
+                const fieldA = a[key].toUpperCase()
+                const fieldB = b[key].toUpperCase()
+                if (rule === 'asc') {
+                  if (fieldA > fieldB) {
+                    comparison = 1;
+                  } else if (fieldA < fieldB) {
+                    comparison = -1;
+                  }
+                } else {
+                  if (fieldA < fieldB) {
+                    comparison = 1;
+                  } else if (fieldA > fieldB) {
+                    comparison = -1;
+                  }
+                }
+                return comparison
+              } else {
+                if (rule === 'asc') {
+                  return a.year - b.year
+                } else {
+                  return b.year - a.year
                 }
               }
             }
           },
-          customersUpdate() {
-            return {
-              loading:false,
-              buttonLabel: 'Update',
-              async updateData() {
-                this.loading=true;
-                this.buttonLabel="Updating ...";
-                var result = await fetch('<?= base_url(); ?>admin/customers/update/'+this.dataEdit.id, {
-                  method: 'POST',
-                  headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(this.dataEdit)
-                }).then(function(response){
-                  if(response.ok) return response.json()
-                  return Promise.reject(response);
-                }).catch((err) => {
-                    this.closeModal('edit');
-                    this.openToast('error', 'Response error');
-                    this.loading=false;
-                    this.buttonLabel='Update';
-                });
-
-
-                if(!result) return;
-
-                if(result.code == 200){
-                   this.closeModal('edit');
-                   this.openToast(result.status, result.message);
-                   setTimeout(() => {
-                     window.location.reload();
-                  }, 2000);
-                }else{
-                  this.closeModal('edit');
-                  this.openToast(result.status, result.message);
-                  this.loading=false;
-                  this.buttonLabel = 'Update';
-                }
+          checkView(index) {
+            return index > this.pagination.to || index < this.pagination.from ? false : true
+          },
+          checkPage(item) {
+            if (item <= this.currentPage + 5) {
+              return true
+            }
+            return false
+          },
+          search(value) {
+            if (value.length > 1) {
+              const options = {
+                shouldSort: true,
+                keys: ['username', 'email','address','full_name','phone'],
+                threshold: 0
+              }                
+              const fuse = new Fuse(this.dataTB, options)
+              this.items = fuse.search(value).map(elem => elem.item)
+            } else {
+              this.items = this.dataTB
+            }
+            this.changePage(1)
+            this.showPages()
+          },
+          sort(field, rule) {
+            this.items = this.items.sort(this.compareOnKey(field, rule))
+            this.sorted.field = field
+            this.sorted.rule = rule
+          },
+          changePage(page) {
+            if (page >= 1 && page <= this.pagination.lastPage) {
+              this.currentPage = page
+              const total = this.items.length
+              const lastPage = Math.ceil(total / this.view) || 1
+              const from = (page - 1) * this.view + 1
+              let to = page * this.view
+              if (page === lastPage) {
+                to = total
               }
+              this.pagination.total = total
+              this.pagination.lastPage = lastPage
+              this.pagination.perPage = this.view
+              this.pagination.currentPage = page
+              this.pagination.from = from
+              this.pagination.to = to
+              this.showPages()
             }
+          },
+          showPages() {
+            const pages = []
+            let from = this.pagination.currentPage - Math.ceil(this.offset / 2)
+            if (from < 1) {
+              from = 1
+            }
+            let to = from + this.offset - 1
+            if (to > this.pagination.lastPage) {
+              to = this.pagination.lastPage
+            }
+            while (from <= to) {
+              pages.push(from)
+              from++
+            }
+            this.pages = pages;
+          },
+          changeView() {
+            this.changePage(1)
+            this.showPages()
+          },
+          isEmpty() {
+            return this.pagination.total ? false : true
           }
-      }));
+        }
+      }
+    }));
   });
- 
-//  Alpine JS datatable
-window.dataTable = function () {
-  let data = <?= $data; ?>;
-  return {
-    items: [],
-    view: 5,
-    searchInput: '',
-    pages: [],
-    offset: 10,
-    pagination: {
-      total: data.length,
-      lastPage: Math.ceil(data.length / 5),
-      perPage: 5,
-      currentPage: 1,
-      from: 1,
-      to: 1 * 5
-    },
-    currentPage: 1,
-    sorted: {
-      field: 'created_at',
-      rule: 'asc'
-    },
-    initData() {
-      this.items = data.sort(this.compareOnKey('created_at', 'asc'))
-      this.showPages()
-    },
-    compareOnKey(key, rule) {
-      return function(a, b) { 
-        if (key === 'username' || key === 'email' || key === 'phone' || key === 'is_accepted') {
-          let comparison = 0
-          const fieldA = a[key].toUpperCase()
-          const fieldB = b[key].toUpperCase()
-          if (rule === 'asc') {
-            if (fieldA > fieldB) {
-              comparison = 1;
-            } else if (fieldA < fieldB) {
-              comparison = -1;
-            }
-          } else {
-            if (fieldA < fieldB) {
-              comparison = 1;
-            } else if (fieldA > fieldB) {
-              comparison = -1;
-            }
-          }
-          return comparison
-        } else {
-          if (rule === 'asc') {
-            return a.year - b.year
-          } else {
-            return b.year - a.year
-          }
-        }
-      }
-    },
-    checkView(index) {
-      return index > this.pagination.to || index < this.pagination.from ? false : true
-    },
-    checkPage(item) {
-      if (item <= this.currentPage + 5) {
-        return true
-      }
-      return false
-    },
-    search(value) {
-      if (value.length > 1) {
-        const options = {
-          shouldSort: true,
-          keys: ['username', 'email','address','full_name','phone'],
-          threshold: 0
-        }                
-        const fuse = new Fuse(data, options)
-        this.items = fuse.search(value).map(elem => elem.item)
-      } else {
-        this.items = data
-      }
-      this.changePage(1)
-      this.showPages()
-    },
-    sort(field, rule) {
-      this.items = this.items.sort(this.compareOnKey(field, rule))
-      this.sorted.field = field
-      this.sorted.rule = rule
-    },
-    changePage(page) {
-      if (page >= 1 && page <= this.pagination.lastPage) {
-        this.currentPage = page
-        const total = this.items.length
-        const lastPage = Math.ceil(total / this.view) || 1
-        const from = (page - 1) * this.view + 1
-        let to = page * this.view
-        if (page === lastPage) {
-          to = total
-        }
-        this.pagination.total = total
-        this.pagination.lastPage = lastPage
-        this.pagination.perPage = this.view
-        this.pagination.currentPage = page
-        this.pagination.from = from
-        this.pagination.to = to
-        this.showPages()
-      }
-    },
-    showPages() {
-      const pages = []
-      let from = this.pagination.currentPage - Math.ceil(this.offset / 2)
-      if (from < 1) {
-        from = 1
-      }
-      let to = from + this.offset - 1
-      if (to > this.pagination.lastPage) {
-        to = this.pagination.lastPage
-      }
-      while (from <= to) {
-        pages.push(from)
-        from++
-      }
-      this.pages = pages
-    },
-    changeView() {
-      this.changePage(1)
-      this.showPages()
-    },
-    isEmpty() {
-      return this.pagination.total ? false : true
-    }
-  }
-}
+
 </script>
 
-<main class="h-full overflow-y-auto" x-data="app">
-     
+<main class="h-full overflow-y-auto" x-data="app">     
     <div
       x-show="isModalAddOpen"
       x-transition:enter="transition ease-out duration-150"
@@ -440,28 +439,28 @@ window.dataTable = function () {
             <div class="mt-4">
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Username</span>
-              <input x-ref="dataEdit.username" x-model="dataEdit.username" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama pengguna">
+              <input x-ref="dataEdit.username" x-model="dataEdit.username" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama pengguna" required>
             </label>
 
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Email</span>
-              <input x-model="dataEdit.email" type="email" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="email">
+              <input x-model="dataEdit.email" type="email" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="email" required>
             </label>
 
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Nama Lengkap</span>
-              <input x-model="dataEdit.full_name" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama lengkap">
+              <input x-model="dataEdit.full_name" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama lengkap" required>
             </label>
 
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">Alamat</span>
-              <textarea x-model="dataEdit.address" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="alamat lengkap, kecamatan, kabupaten"></textarea>
+              <textarea x-model="dataEdit.address" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="alamat lengkap, kecamatan, kabupaten" required></textarea>
             </label>
             
 
             <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">No. Telepon</span>
-              <input x-model="dataEdit.phone" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="no. telepon">
+              <input x-model="dataEdit.phone" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="no. telepon" required>
             </label>
           </div>
         </div>
