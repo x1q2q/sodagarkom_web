@@ -31,7 +31,7 @@ function data() {
     },
     isProfileMenuOpen: false,
     toggleProfileMenu() {
-      this.isProfileMenuOpen = !this.isProfileMenuOpen
+      this.isProfileMenuOpen = !this.isProfileMenuOpen;
     },
     closeProfileMenu() {
       this.isProfileMenuOpen = false
@@ -39,7 +39,7 @@ function data() {
     isPagesMenuOpen: false,
     togglePagesMenu() {
       this.isPagesMenuOpen = !this.isPagesMenuOpen
-    },
+    }
     // Modal
   }
 }

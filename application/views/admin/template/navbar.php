@@ -56,8 +56,8 @@
             aria-hidden="true"
           />
         </button>
-        <template x-if="isProfileMenuOpen">
-          <ul
+          <ul 
+          x-show="isProfileMenuOpen"
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
@@ -110,7 +110,6 @@
               </a>
             </li>
           </ul>
-        </template>
       </li>
     </ul>
   </div>

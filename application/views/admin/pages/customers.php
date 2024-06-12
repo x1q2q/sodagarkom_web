@@ -54,7 +54,7 @@
               }, 5000);
           },
           closeToast() {
-              this.toastResult.isOpen = false;
+            this.toastResult.isOpen = false;
           },
           async activateCustomer(id){
             await fetch('<?= base_url(); ?>admin/customers/activate/'+id, {
@@ -107,31 +107,38 @@
               async submitData() {
                 this.loading=true;
                 this.buttonLabel="Submitting ...";
-                this.message = '';
 
-                await fetch('<?= base_url(); ?>admin/customers/insert', {
+                var result =  await fetch('<?= base_url(); ?>admin/customers/insert', {
                   method: 'POST',
                   headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                   },
                   body: JSON.stringify(this.formData)
-                })
-                .then(response => response.json())
-                .then((result) => {
-                  if(result.code == 200){
-                     this.closeModal('add');
-                     this.openToast(result.status, result.message);
-                     setTimeout(() => {
-                       window.location.reload();
-                    }, 2000);
-                  }else{
+                }).then(function(response){
+                  if(response.ok) return response.json()
+                  return Promise.reject(response);
+                }).catch((err) => {
                     this.closeModal('add');
-                    this.openToast(result.status, result.message);
+                    this.openToast('error', 'Response error');
                     this.loading=false;
                     this.buttonLabel='Submit';
-                  }                  
                 });
+
+                if(!result) return;
+
+                if(result.code == 200){
+                   this.closeModal('add');
+                   this.openToast(result.status, result.message);
+                   setTimeout(() => {
+                     window.location.reload();
+                  }, 2000);
+                }else{
+                  this.closeModal('add');
+                  this.openToast(result.status, result.message);
+                  this.loading=false;
+                  this.buttonLabel='Submit';
+                }
               }
             }
           },
@@ -142,31 +149,38 @@
               async updateData() {
                 this.loading=true;
                 this.buttonLabel="Updating ...";
-                this.message = '';
-
-                await fetch('<?= base_url(); ?>admin/customers/update/'+this.dataEdit.id, {
+                var result = await fetch('<?= base_url(); ?>admin/customers/update/'+this.dataEdit.id, {
                   method: 'POST',
                   headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                   },
                   body: JSON.stringify(this.dataEdit)
-                })
-                .then(response => response.json())
-                .then((result) => {
-                  if(result.code == 200){
-                     this.closeModal('edit');
-                     this.openToast(result.status, result.message);
-                     setTimeout(() => {
-                       window.location.reload();
-                    }, 2000);
-                  }else{
+                }).then(function(response){
+                  if(response.ok) return response.json()
+                  return Promise.reject(response);
+                }).catch((err) => {
                     this.closeModal('edit');
-                    this.openToast(result.status, result.message);
+                    this.openToast('error', 'Response error');
                     this.loading=false;
-                    this.buttonLabel = 'Update';
-                  }
+                    this.buttonLabel='Update';
                 });
+
+
+                if(!result) return;
+
+                if(result.code == 200){
+                   this.closeModal('edit');
+                   this.openToast(result.status, result.message);
+                   setTimeout(() => {
+                     window.location.reload();
+                  }, 2000);
+                }else{
+                  this.closeModal('edit');
+                  this.openToast(result.status, result.message);
+                  this.loading=false;
+                  this.buttonLabel = 'Update';
+                }
               }
             }
           }
@@ -376,8 +390,7 @@ window.dataTable = function () {
         <footer
           class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
         >
-          <button
-            @click="closeModal('add')"
+          <button type="button" @click="closeModal('add')"
             class="w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"
           >
             Cancel
@@ -395,7 +408,7 @@ window.dataTable = function () {
     </div>
     <!-- End of modal add backdrop -->
 
-    <form
+    <div
       x-show="isModalEditOpen"
       x-transition:enter="transition ease-out duration-150"
       x-transition:enter-start="opacity-0"
@@ -404,11 +417,9 @@ window.dataTable = function () {
       x-transition:leave-start="opacity-100"
       x-transition:leave-end="opacity-0"
       class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
-      x-data="customersUpdate()"
-      @submit.prevent="updateData"
     >
       <!-- Modal -->
-      <div
+      <form
         x-show="isModalEditOpen"
         x-transition:enter="transition ease-out duration-150"
         x-transition:enter-start="opacity-0 transform translate-y-1/2"
@@ -419,6 +430,8 @@ window.dataTable = function () {
         class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
         role="dialog"
         id="modal-edit"
+        x-data="customersUpdate()"
+        @submit.prevent="updateData"
       >
         <div class="mt-4 mb-6">
           <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">
@@ -455,9 +468,9 @@ window.dataTable = function () {
         <footer
           class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
         >
-          <button
+          <button type="button" 
             @click="closeModal('edit')"
-            class="w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"
+            class="cursor-pointer w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"
           >
             Cancel
           </button>
@@ -469,8 +482,8 @@ window.dataTable = function () {
             Update
           </button>
         </footer>
-      </div>
-    </form>
+      </form>
+    </div>
     <!-- End of modal edit backdrop -->
 
 
