@@ -5,21 +5,34 @@ class M_transactions extends CI_Model {
 	protected $tabel_name = 'transactions';
 
 	public function get_all(){
-		$query = $this->db->get($this->tabel_name);
+		$query = $this->db->from($this->tabel_name)
+				->order_by('id','desc')->get();
 		return $query->result();
 	}
-	public function tambah($data){
+	public function get_join(){
+		$this->db->select('t.*, c.username as customer_name');
+	    $this->db->from('transactions t');
+	    $this->db->join('customers c','c.id=t.customer_id');
+	    $this->db->order_by('t.id','desc');
+	    $data = $this->db->get()->result();
+	    return $data;
+	}
+	public function insert($data){
 		$query = $this->db->insert($this->tabel_name,$data);
+		return $query;
+	}
+	public function update($data,$where){
+		$query = $this->db->update($this->tabel_name,$data,$where);
+		return $query;
+	}
+	public function delete($where){
+		$query = $this->db->delete($this->tabel_name,$where);
 		return $query;
 	}
 	public function get_detail($data){
 		$this->db->from($this->tabel_name)
 				 ->where($data);
 		$query = $this->db->get();
-		return $query;
-	}
-	public function update_data($data,$where){
-		$query = $this->db->update($this->tabel_name,$data,$where);
 		return $query;
 	}
 }

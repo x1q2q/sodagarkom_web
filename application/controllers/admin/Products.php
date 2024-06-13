@@ -19,7 +19,8 @@ class Products extends CI_Controller {
 				'template'  	=> 'admin/pages/products',
 				'menu_active'	=> 'products',
 				'data'			=> json_encode($this->m_products->get_join()),
-				'categories'	=> $this->m_categories->get_all()
+				'categories'	=> $this->m_categories->get_all(),
+				'product_assets'=> product_assets()
 		);
 		$this->load_templates($data);
 	}

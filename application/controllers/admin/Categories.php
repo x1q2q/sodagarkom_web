@@ -18,7 +18,8 @@ class Categories extends CI_Controller {
 				'title' 		=> 'Categories | Sodagar Komputer',
 				'template'  	=> 'admin/pages/categories',
 				'menu_active'	=> 'categories',
-				'data'			=> json_encode($this->m_categories->get_all())
+				'data'			=> json_encode($this->m_categories->get_all()),
+				'category_assets' => category_assets(),
 		);
 		$this->load_templates($data);
 	}

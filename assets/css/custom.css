@@ -1,0 +1,9 @@
+
+[x-cloak] { display: none!important; }
+input[type="file"]::file-selector-button {
+    border: 1px solid white;
+    padding: 0.4em 0.6em;
+    border-radius: 0.4em;
+    color:white;
+    background-color: #7e3af2;
+ }

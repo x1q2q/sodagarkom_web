@@ -10,10 +10,12 @@
       rel="stylesheet" />
       
     <link rel="stylesheet" href="<?= base_url('assets'); ?>/css/tailwind.output.css" />
+    <link rel="stylesheet" href="<?= base_url('assets'); ?>/css/custom.css" />
 
     <script
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
       defer></script>
     <script src="<?= base_url('assets'); ?>/js/init-alpine.js"></script>
+    <script src="<?= base_url('assets'); ?>/js/script.js"></script>
   </head>
 

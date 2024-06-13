@@ -9,3 +9,12 @@ function test_input($data){
 function validate($text){
 	return (!ctype_space($text) && $text !== "" && $text !== null);
 }
+function category_assets(){
+	return base_url('assets/uploads/categories/');
+}
+function product_assets(){
+	return base_url('assets/uploads/products/');
+}
+function payment_assets(){
+	return base_url('assets/uploads/payments/');
+}

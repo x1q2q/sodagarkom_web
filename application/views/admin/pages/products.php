@@ -1,5 +1,6 @@
 <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
 <script type="text/javascript">
+ var productAssets = "<?= $product_assets; ?>";
  document.addEventListener('alpine:init', () => {
   let timer;
   Alpine.data('appProduct', () => ({
@@ -354,9 +355,10 @@
               <th class="px-4 py-3">No.</th>
               <th class="px-4 py-3">Kategori</th>
               <th class="px-4 py-3">Nama Produk</th>
-              <th class="px-4 py-3">Deskripsi Produk</th>
               <th class="px-4 py-3">Harga</th>
               <th class="px-4 py-3">Stok</th>
+              <th class="px-4 py-3 text-center">Thumb. Gambar</th>
+              <th class="px-4 py-3">Deskripsi Produk</th>
               <th class="px-4 py-3 text-center">Aksi</th>
             </tr>
           </thead>
@@ -373,14 +375,17 @@
                 <span x-text="item.name"></span>
               </td>
               <td class="px-4 py-3 text-sm">
-                <span x-text="item.description"></span>
-              </td>
-              <td class="px-4 py-3 text-sm">
                 <span x-text="item.price"></span>
               </td>
               <td class="px-4 py-3 text-sm">
                 <span x-text="item.stock"></span>
               </td>
+              <td class="px-4 py-3 text-sm">
+                <img x-bind:src="productAssets + item.image_thumb" style="width:8rem">
+              </td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="item.description"></span>
+              </td>            
               
               <td class="px-4 py-3">
                   <div class="flex items-center justify-center space-x-4 text-sm">
@@ -486,31 +491,39 @@
         </label>
 
         <label class="block text-sm mt-2">
-        <span class="text-gray-700 dark:text-gray-400">Kategori</span>
-        <select 
-            class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" 
-            x-model="dataEdit.category_id" required>
-            <option value="" hidden>pilih kategori</option>
-            <?php foreach($categories as $result): ?>
-            <option value="<?= $result->id; ?>" 
-              :selected="formData.category_id == <?= $result->id; ?>"><?= $result->name; ?></option>
-            <?php endforeach; ?>
-        </select>
-      </label>
+          <span class="text-gray-700 dark:text-gray-400">Kategori</span>
+          <select 
+              class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" 
+              x-model="dataEdit.category_id" required>
+              <option value="" hidden>pilih kategori</option>
+              <?php foreach($categories as $result): ?>
+              <option value="<?= $result->id; ?>" 
+                :selected="formData.category_id == <?= $result->id; ?>"><?= $result->name; ?></option>
+              <?php endforeach; ?>
+          </select>
+        </label>
+
+        <div class="flex mt-2 justify-between items-center">
+          <label class="flex-1 text-sm mr-1">
+            <span class="text-gray-700 dark:text-gray-400">Harga</span>
+            <input x-model="dataEdit.price" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="jumlah harga" required>
+          </label>
+
+          <label class="flex-1 text-sm ml-1">
+            <span class="text-gray-700 dark:text-gray-400">Stok</span>
+            <input x-model="dataEdit.stock" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="jumlah stok" required>
+          </label>
+        </div>
+
+        <label class="block text-sm mt-2">
+          <span class="text-gray-700 dark:text-gray-400">Upload File</span>
+          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 5mb).</p>
+        </label>
 
         <label class="block text-sm mt-2">
           <span class="text-gray-700 dark:text-gray-400">Deskripsi</span>
           <textarea x-model="dataEdit.description" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="deskripsi kategori" required></textarea>
-        </label>
-
-        <label class="block text-sm mt-2">
-          <span class="text-gray-700 dark:text-gray-400">Harga</span>
-          <input x-model="dataEdit.price" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="jumlah harga" required>
-        </label>
-
-        <label class="block text-sm mt-2">
-          <span class="text-gray-700 dark:text-gray-400">Stok</span>
-          <input x-model="dataEdit.stock" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="jumlah stok" required>
         </label>
       </div>
     </div>
@@ -585,21 +598,29 @@
             </select>
           </label>
 
+          <div class="flex mt-2 justify-between items-center">
+            <label class="flex-1 text-sm mr-1">
+              <span class="text-gray-700 dark:text-gray-400">Harga</span>
+              <input name="price" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="harga produk @rupiah"
+              x-model="formData.price" required>
+            </label>
+
+            <label class="flex-1 text-sm ml-1">
+              <span class="text-gray-700 dark:text-gray-400">Stok</span>
+              <input name="stock" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="stok produk @pcs"
+              x-model="formData.stock" required>
+            </label>
+          </div>
+
           <label class="block text-sm mt-2">
+            <span class="text-gray-700 dark:text-gray-400">Upload File</span>
+            <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 5mb).</p>
+          </label>
+
+         <label class="block text-sm mt-2">
             <span class="text-gray-700 dark:text-gray-400">Deskripsi</span>
             <textarea name="description" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="deskripsi produk" x-model="formData.description" required></textarea>
-          </label>
-
-          <label class="block text-sm mt-2">
-            <span class="text-gray-700 dark:text-gray-400">Harga</span>
-            <input name="price" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="harga produk"
-            x-model="formData.price" required>
-          </label>
-
-          <label class="block text-sm mt-2">
-            <span class="text-gray-700 dark:text-gray-400">Stok</span>
-            <input name="stock" type="number" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="stok produk"
-            x-model="formData.stock" required>
           </label>
       </div>
       <footer

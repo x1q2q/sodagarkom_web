@@ -1,5 +1,6 @@
 <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
 <script type="text/javascript">
+var categoryAsset = "<?= $category_assets; ?>";
  document.addEventListener('alpine:init', () => {
   let timer;
   Alpine.data('appCategory', () => ({
@@ -328,7 +329,7 @@
                 <input x-model="searchInput"
                   class="w-full pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:border-purple-300 focus:outline-none focus:shadow-outline-purple form-input"
                   type="text"
-                  placeholder="Cari @nama @deskripsi"
+                  placeholder="Cari @nama kategori / @deskripsi"
                   aria-label="Search"
                 />
               </div>
@@ -352,6 +353,7 @@
             >
               <th class="px-4 py-3">No.</th>
               <th class="px-4 py-3">Nama Kategori</th>
+              <th class="px-4 py-3 text-center">Thumb. Gambar</th>
               <th class="px-4 py-3">Deskripsi Kategori</th>
               <th class="px-4 py-3 text-center">Aksi</th>
             </tr>
@@ -364,6 +366,9 @@
               <td class="px-4 py-3 text-sm" x-text="index+1"></td>
               <td class="px-4 py-3 text-sm">
                 <span x-text="item.name"></span>
+              </td>
+              <td class="px-4 py-3 text-sm">
+                <img x-bind:src="categoryAsset + item.image_thumb" class="w-56">
               </td>
               <td class="px-4 py-3 text-sm whitespace-break-spaces">
                 <span x-text="item.description"></span>
@@ -416,7 +421,7 @@
                   </button>
                 </li>
               </template>
-              
+
               <li>
                 <button
                   class="ml-2 rounded-md focus:outline-none focus:shadow-outline-purple"
@@ -474,6 +479,12 @@
         <label class="block text-sm mt-2">
           <span class="text-gray-700 dark:text-gray-400">Deskripsi</span>
           <textarea x-model="dataEdit.description" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="deskripsi kategori" required></textarea>
+        </label>
+
+        <label class="block text-sm mt-2">
+          <span class="text-gray-700 dark:text-gray-400">Upload File</span>
+          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 5mb).</p>
         </label>
       </div>
     </div>
@@ -540,6 +551,13 @@
             <span class="text-gray-700 dark:text-gray-400">Deskripsi</span>
             <textarea name="description" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="deskripsi kategori" x-model="formData.description" required></textarea>
           </label>
+
+          <label class="block text-sm mt-2">
+          <span class="text-gray-700 dark:text-gray-400">Upload File</span>
+          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 5mb).</p>
+          </label>
+
       </div>
       <footer
         class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
