@@ -7,36 +7,42 @@
       dataSources:  <?= $data; ?>,
       isModalOpen:{
         'modalDelete':false,
-        'modalEdit':false
+        'modalPayment':false,
+        'modalDetail':false
       },
       toastResult:{
         'status':'',
         'message':'',
         'isOpen':false
       },
-      dataEdit:{},
+      dataDetail:{},
+      dataDetailTransactions:[],
       closeModal(typeModal){
         if(typeModal == 'delete'){
           this.isModalOpen.modalDelete = false
-        }else{
-          this.isModalOpen.modalEdit=false
-          this.dataEdit={}
+        }else if(typeModal == 'payment'){
+          this.isModalOpen.modalPayment=false
+        }else if(typeModal == 'detail'){
+          this.isModalOpen.modalDetail=false
         }
+        this.dataDetail={}
       },
       openModal(typeModal,item=null){
         if(typeModal == 'delete'){
           this.isModalOpen.modalDelete = true
-          this.dataEdit.id = item
-        }else if(typeModal == 'edit' && item != null){
-          this.isModalOpen.modalEdit=true
-          // use this inseatd of this.dataEdit = item, so we prevent from reactivitiy models 
-          // when user editing form edit data
-          this.dataEdit= {
-            id: item.id,
-            name: item.name,
-            description: item.description
+        }else if(typeModal == 'payment' && item != null){
+          this.isModalOpen.modalPayment=true
+        }else if(typeModal == 'detail' && item != null){
+          this.isModalOpen.modalDetail = true;
+          this.getDetailTransactions(item.id);
+        }
+        this.dataDetail= {
+            'id': item.id,
+            'payment_proof': item.payment_proof,
+            'customer_name': item.customer_name,
+            'total_amount': item.total_amount,
+            'created_at':item.created_at
           }
-        }       
       },
       openToast(status, message) {
           if (this.toastResult.isOpen) return;
@@ -52,7 +58,7 @@
         this.toastResult.isOpen = false;
       },
       async deleteData(){
-        await fetch('<?= base_url(); ?>admin/transaction/delete/'+this.dataEdit.id, {
+        await fetch('<?= base_url(); ?>admin/transactions/delete/'+this.dataDetail.id, {
               method: 'GET',
               headers: {
                 'Accept': 'application/json',
@@ -70,6 +76,44 @@
                 }, 2000);                  
             }
              this.closeModal('delete');       
+          });
+      },
+      async getDetailTransactions(id){
+        await fetch('<?= base_url(); ?>admin/transactions/transaction_details/'+id, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+            })
+          .then(response => response.json())
+          .then((result) => {
+            if(result.code == 200){
+              this.dataDetailTransactions = result.data;          
+            }else{
+              this.dataDetailTransactions = [];
+            }
+          });
+      },
+      async acceptTransaction(){
+        await fetch('<?= base_url(); ?>admin/transactions/accept_payment/'+this.dataDetail.id, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+            })
+          .then(response => response.json())
+          .then((result) => {
+            if(result.code == 200){
+               this.closeModal('payment');
+                 
+                 this.openToast(result.status, result.message);
+                 setTimeout(() => {
+                     window.location.reload();
+                }, 2000);                  
+            }
+             this.closeModal('payment');       
           });
       },
       dataTable(){
@@ -272,8 +316,13 @@
                 <span x-text="convertToRupiah(item.total_amount)"></span>
               </td>
               <td class="px-4 py-3 text-sm text-center">
-                <template x-if="item.status == 'accepted'">
-                  <img x-bind:src="paymentAsset + item.payment_proof" class="w-56">
+                <template x-if="item.status == 'rejected'">
+                  <span class="text-xs">transaksi dibatalkan</span>
+                </template>
+                <template x-cloak x-if="item.status == 'accepted'">
+                  <div class="flex justify-center bg-gray-50 p-2">
+                    <img :src="paymentAsset + item.payment_proof" style="max-height:100px">
+                  </div>
                 </template>
                 <template x-if="item.status == 'pending' && item.payment_proof === ''">
                   <span class="text-xs">belum ada pembayaran</span>
@@ -281,7 +330,7 @@
                 <template x-if="item.status == 'pending' && item.payment_proof !== '' ">
                   <div>
                     <span class="text-xs">sudah ada pembayaran</span>
-                    <button class="w-full flex items-center justify-center mt-2 px-2 py-1 text-sm font-small leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-md active:bg-green-700 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
+                    <button @click="openModal('payment', item)" class="w-full flex items-center justify-center mt-2 px-2 py-1 text-sm font-small leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-md active:bg-green-700 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
                     <span class="text-2xl"><i class='bx bx-list-check'></i></span>
                       <span>Lihat Bukti</span>
                     </button>
@@ -289,7 +338,21 @@
                 </template>
               </td>
               <td class="px-4 py-3 text-sm">
-                <span x-text="item.status"></span>
+                <template x-if="item.status == 'accepted' ">
+                  <span
+                    class="px-2 py-1 font-semibold leading-tight rounded-full text-green-700 bg-green-100 dark:text-green-100 dark:bg-green-700" x-text="item.status">
+                  </span>
+                </template>
+                <template x-if="item.status == 'pending' ">
+                  <span
+                    class="px-2 py-1 font-semibold leading-tight rounded-full text-yellow-600 bg-orange-100 dark:text-white dark:bg-yellow-400" x-text="item.status">
+                  </span>
+                </template>
+                <template x-if="item.status == 'rejected' ">
+                  <span
+                    class="px-2 py-1 font-semibold leading-tight rounded-full text-red-700 bg-red-100 dark:bg-red-600 dark:text-white" x-text="item.status">
+                  </span>
+                </template>
               </td>
               <td class="px-4 py-3 text-sm">
                 <span x-text="item.created_at"></span>
@@ -303,7 +366,7 @@
                     >
                     <span class="text-2xl"><i class='bx bxs-show'></i></span>
                     </button>
-                    <button @click="openModal('delete',item.id)"
+                    <button @click="openModal('delete',item)"
                       class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                       aria-label="Delete"
                     >
@@ -358,6 +421,148 @@
       </div>
   </div>
 </div>
+
+<div
+  x-cloak
+  x-show="isModalOpen.modalDetail"
+  x-transition:enter="transition ease-out duration-150"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition ease-in duration-150"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+  class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
+>
+  <!-- Modal -->
+  <div
+    x-show="isModalOpen.modalDetail"
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0 transform translate-y-1/2"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0  transform translate-y-1/2"
+    @click.away="closeModal('detail')"
+    class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
+    role="dialog"
+    id="modal-detail"
+  >
+    <div class="mt-4 mb-6">
+      <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+        Detail Transaksi
+      </p>
+      <div class="mt-4 mb-4">
+        <p class="text-sm text-gray-700 dark:text-gray-400">
+          Berikut detail transaksi dari <b><span x-text="dataDetail.customer_name"></span></b> pada tanggal <span x-text="dataDetail.created_at"></span>
+        </p>
+      </div>
+      <table class="w-full whitespace-wrap table-auto border dark:border-gray-700">
+        <thead>
+            <tr class="rounded-md text-xs font-semibold border-t tracking-wide text-left text-white uppercase border-b dark:border-gray-700 bg-purple-600">
+              <th class="p-2">Produk</th>
+              <th class="p-2">Kuantitas</th>
+              <th class="p-2">Harga Total</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+          <template x-for="details in dataDetailTransactions">
+            <tr class="text-gray-700 dark:text-gray-400">
+              <td class="px-4 py-3 text-sm">
+                <span x-text="details.product_name"></span>
+              </td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="details.quantity"></span>
+              </td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="convertToRupiah(details.price)"></span>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <table class="w-full mt-2 whitespace-wrap table-auto border dark:border-gray-700">
+        <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+         <tr class="text-xs font-semibold border-t tracking-wide text-left tuppercase border-b dark:border-gray-700">
+            <td class="px-4 py-3 text-sm bg-gray-100">Total Pembayaran Transaksi</td>
+            <td class="px-4 py-3 text-sm dark:text-white" x-text="convertToRupiah(dataDetail.total_amount)"></td>
+          </tr>
+        </tbody>
+      </table>
+           
+    </div>
+    <footer
+      class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
+    >
+      <button @click="closeModal('detail')"
+        class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-purple-600 focus:outline-none focus:shadow-outline-purple"
+      >
+        Close
+      </button>
+    </footer>
+  </div>
+</div>
+<!-- End of modal detail backdrop -->
+
+
+<div
+    x-cloak
+    x-show="isModalOpen.modalPayment"
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
+  >
+    <!-- Modal -->
+    <div
+      x-cloak
+      x-show="isModalOpen.modalPayment"
+      x-transition:enter="transition ease-out duration-150"
+      x-transition:enter-start="opacity-0 transform translate-y-1/2"
+      x-transition:enter-end="opacity-100"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0  transform translate-y-1/2"
+      @click.away="closeModal('payment')"
+      class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
+      role="dialog"
+      id="modal-payment"
+    >
+      <div class="mt-4 mb-6">
+        <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+          Bukti Pembayaran
+        </p>
+        <div class="mt-4">
+          <p class="text-sm text-gray-700 dark:text-gray-400">
+            Konfirmasi untuk menyetujui bukti pembayaran ini?
+          </p>
+          <template x-if="dataDetail.payment_proof != '' && dataDetail.payment_proof != undefined">
+            <div class="flex p-2 rounded-lg justify-center bg-gray-50">
+              <img class="rounded-lg" :src="paymentAsset + dataDetail.payment_proof" style="max-height: 350px;">
+            </div>
+          </template>      
+        </div>
+      </div>
+      <footer
+        class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
+      >
+        <button
+          @click="closeModal('payment')"
+          class="w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"
+        >
+          Cancel
+        </button>
+        <button @click="acceptTransaction()"
+          class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-teal-400 focus:outline-none focus:shadow-outline-purple"
+        >
+          Ya, Konfirmasi
+        </button>
+      </footer>
+    </div>
+  </div>
+  <!-- End of modal payment backdrop -->
 
 <?php $this->load->view('admin/pages/modal_delete'); ?>
 <?php $this->load->view('admin/pages/toast_modal'); ?>

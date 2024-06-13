@@ -25,11 +25,11 @@
     >
       <div class="mt-4 mb-6">
         <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">
-          Delete Data
+          Hapus Data
         </p>
         <div class="mt-4">
           <p class="text-sm text-gray-700 dark:text-gray-400">
-            Confirm to delete this data?
+            Konfirmasi untuk menghapus data ini?
           </p>
         </div>
       </div>
@@ -45,7 +45,7 @@
         <button @click="deleteData()"
           class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-red-600  focus:outline-none focus:shadow-outline-purple"
         >
-          Yes, Delete
+          Ya, Hapus
         </button>
       </footer>
     </div>

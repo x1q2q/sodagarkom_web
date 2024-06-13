@@ -381,7 +381,12 @@
                 <span x-text="item.stock"></span>
               </td>
               <td class="px-4 py-3 text-sm">
-                <img x-bind:src="productAssets + item.image_thumb" style="width:8rem">
+                <template x-if="item.image_thumb !== '' ">
+                  <img x-bind:src="productAssets + item.image_thumb" style="width:8rem">
+                </template>
+                <template x-if="item.image_thumb == '' ">
+                  <span>-</span>
+                </template>
               </td>
               <td class="px-4 py-3 text-sm">
                 <span x-text="item.description"></span>

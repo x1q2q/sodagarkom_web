@@ -23,30 +23,21 @@ class Transactions extends CI_Controller {
 		);
 		$this->load_templates($data);
 	}
-	public function get_data(){
-		echo json_encode($this->m_transactions->get_join());
+	public function get_data($transaction_id){
+		echo json_encode($this->m_transactions->get_transaction_detail($transaction_id));
 	}
-	public function update($id){
-		$stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
-		$request = json_decode($stream_clean);
+	public function transaction_details($transaction_id){
+		return $this->output->set_content_type('application/json')
+		        ->set_output(json_encode(array('code' => 200, 'status' => 'ok','message' => 'Transaction details succes retrieved!', 'data' => $this->m_transactions->get_transaction_detail($transaction_id))));
+	}
+	public function accept_payment($id){
+		$data = array('status' => 'accepted');
+		$where = array('id' => $id);
 
-		$name			= test_input($request->name);
-		$description 	= test_input($request->description);
-
-		if(validate($name) && validate($description)){
-			$data = array(
-				'name' => $name,
-				'description' => $description
-			);
-			$where = array('id' => $id);
-			if($this->m_transactions->update($data,$where)){
-				return$this->output
-		        ->set_content_type('application/json')
-		        ->set_output(json_encode(array('code' => 200, 'status' => 'ok','message' => 'Transaction item has been updated!')));
-			}
-		}else{
-			return $this->output->set_content_type('application/json')
-		        ->set_output(json_encode(array('code' => 400, 'status' => 'error','message' => 'Input field is empty')));
+		if($this->m_transactions->update($data,$where)){
+			return $this->output
+	        ->set_content_type('application/json')
+	        ->set_output(json_encode(array('code' => 200, 'status' => 'ok','message' => 'Transaction item has been accepted!')));
 		}
 	}
 	public function delete($id){

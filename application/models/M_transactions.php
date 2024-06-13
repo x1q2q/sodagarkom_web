@@ -17,6 +17,16 @@ class M_transactions extends CI_Model {
 	    $data = $this->db->get()->result();
 	    return $data;
 	}
+	public function get_transaction_detail($transaction_id){
+		$this->db->select('td.*, p.name as product_name');
+		$this->db->from('transactions t');
+	    $this->db->join('transaction_details td','td.transaction_id=t.id');
+	    $this->db->join('products p','td.product_id=p.id');
+	    $this->db->where('t.id', $transaction_id);
+	    $this->db->order_by('td.id','desc');
+	    $data = $this->db->get()->result();
+	    return $data;
+	}
 	public function insert($data){
 		$query = $this->db->insert($this->tabel_name,$data);
 		return $query;
