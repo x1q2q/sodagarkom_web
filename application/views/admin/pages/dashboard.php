@@ -42,12 +42,12 @@
           <p
             class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
           >
-            Total clients
+            Total Customers
           </p>
           <p
             class="text-lg font-semibold text-gray-700 dark:text-gray-200"
           >
-            6389
+            120+
           </p>
         </div>
       </div>
@@ -70,12 +70,12 @@
           <p
             class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
           >
-            Account balance
+            Orders Totals
           </p>
           <p
             class="text-lg font-semibold text-gray-700 dark:text-gray-200"
           >
-            $ 46,760.89
+            Rp. 12.500.000
           </p>
         </div>
       </div>
@@ -96,7 +96,7 @@
           <p
             class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
           >
-            New sales
+            Total Products
           </p>
           <p
             class="text-lg font-semibold text-gray-700 dark:text-gray-200"
@@ -124,7 +124,7 @@
           <p
             class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
           >
-            Pending contacts
+            Pending Transactions
           </p>
           <p
             class="text-lg font-semibold text-gray-700 dark:text-gray-200"

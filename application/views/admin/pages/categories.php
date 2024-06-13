@@ -3,7 +3,7 @@
  document.addEventListener('alpine:init', () => {
   let timer;
   Alpine.data('appCategory', () => ({
-      dataCTG:  <?= $data; ?>,
+      dataSources:  <?= $data; ?>,
       isModalOpen:{
         'modalAdd':false,
         'modalDelete':false,
@@ -15,7 +15,7 @@
         'isOpen':false
       },
       dataEdit:{},
-      closeModalCategory(typeModal){
+      closeModal(typeModal){
         if(typeModal == 'add'){
           this.isModalOpen.modalAdd = false  
         }else if(typeModal == 'delete'){
@@ -25,7 +25,7 @@
           this.dataEdit={}
         }
       },
-      openModalCategory(typeModal,item=null){
+      openModal(typeModal,item=null){
         if(typeModal == 'add'){
           this.isModalOpen.modalAdd = true 
         }else if(typeModal == 'delete'){
@@ -55,7 +55,7 @@
       closeToast() {
         this.toastResult.isOpen = false;
       },
-      async deleteCategory(){
+      async deleteData(){
         await fetch('<?= base_url(); ?>admin/categories/delete/'+this.dataEdit.id, {
               method: 'GET',
               headers: {
@@ -66,14 +66,14 @@
           .then(response => response.json())
           .then((result) => {
             if(result.code == 200){
-               this.closeModalCategory('delete');
+               this.closeModal('delete');
                  
                  this.openToast(result.status, result.message);
                  setTimeout(() => {
                      window.location.reload();
                 }, 2000);                  
             }
-             this.closeModalCategory('delete');       
+             this.closeModal('delete');       
           });
       },
       categoriesInsert() {
@@ -99,7 +99,7 @@
               if(response.ok) return response.json()
               return Promise.reject(response);
             }).catch((err) => {
-                this.closeModalCategory('add');
+                this.closeModal('add');
                 this.openToast('error', 'Response error');
                 this.loading=false;
                 this.buttonLabel='Submit';
@@ -108,13 +108,13 @@
             if(!result) return;
 
             if(result.code == 200){
-               this.closeModalCategory('add');
+               this.closeModal('add');
                this.openToast(result.status, result.message);
                setTimeout(() => {
                  window.location.reload();
               }, 2000);
             }else{
-              this.closeModalCategory('add');
+              this.closeModal('add');
               this.openToast(result.status, result.message);
               this.loading=false;
               this.buttonLabel='Submit';
@@ -140,7 +140,7 @@
               if(response.ok) return response.json()
               return Promise.reject(response);
             }).catch((err) => {
-                this.closeModalCategory('edit');
+                this.closeModal('edit');
                 this.openToast('error', 'Response error');
                 this.loading=false;
                 this.buttonLabel='Update';
@@ -150,13 +150,13 @@
             if(!result) return;
 
             if(result.code == 200){
-               this.closeModalCategory('edit');
+               this.closeModal('edit');
                this.openToast(result.status, result.message);
                setTimeout(() => {
                  window.location.reload();
               }, 2000);
             }else{
-              this.closeModalCategory('edit');
+              this.closeModal('edit');
               this.openToast(result.status, result.message);
               this.loading=false;
               this.buttonLabel = 'Update';
@@ -172,8 +172,8 @@
           pages: [],
           offset: 10,
           pagination: {
-            total: this.dataCTG.length,
-            lastPage: Math.ceil(this.dataCTG.length / 5),
+            total: this.dataSources.length,
+            lastPage: Math.ceil(this.dataSources.length / 5),
             perPage: 5,
             currentPage: 1,
             from: 1,
@@ -185,7 +185,7 @@
             rule: 'desc'
           },
           initData() {
-            this.items = this.dataCTG.sort(this.compareOnKey('id', 'desc'))
+            this.items = this.dataSources.sort(this.compareOnKey('id', 'desc'))
             this.showPages()
           },
           compareOnKey(key, rule) {
@@ -233,10 +233,10 @@
                 keys: ['name', 'description'],
                 threshold: 0
               }                
-              const fuse = new Fuse(this.dataCTG, options)
+              const fuse = new Fuse(this.dataSources, options)
               this.items = fuse.search(value).map(elem => elem.item)
             } else {
-              this.items = this.dataCTG
+              this.items = this.dataSources
             }
             this.changePage(1)
             this.showPages()
@@ -295,144 +295,7 @@
 </script>
 
 <main class="h-full overflow-y-auto" x-data="appCategory">
-    <div
-      x-cloak
-      x-show="isModalOpen.modalEdit"
-      x-transition:enter="transition ease-out duration-150"
-      x-transition:enter-start="opacity-0"
-      x-transition:enter-end="opacity-100"
-      x-transition:leave="transition ease-in duration-150"
-      x-transition:leave-start="opacity-100"
-      x-transition:leave-end="opacity-0"
-      class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
-    >
-      <!-- Modal -->
-      <form
-        x-show="isModalOpen.modalEdit"
-        x-transition:enter="transition ease-out duration-150"
-        x-transition:enter-start="opacity-0 transform translate-y-1/2"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0  transform translate-y-1/2"
-        class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
-        role="dialog"
-        id="modal-edit-category"
-        x-data="categoriesUpdate()"
-        @submit.prevent="updateData"
-      >
-        <div class="mt-4 mb-6">
-          <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">
-            Edit Data
-          </p>
-            <div class="mt-4">
-            <label class="block text-sm mt-2">
-              <span class="text-gray-700 dark:text-gray-400">Nama</span>
-              <input x-model="dataEdit.name" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama kategori" required>
-            </label>
-
-            <label class="block text-sm mt-2">
-              <span class="text-gray-700 dark:text-gray-400">Deskripsi</span>
-              <textarea x-model="dataEdit.description" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="deskripsi kategori" required></textarea>
-            </label>
-          </div>
-        </div>
-        <footer
-          class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
-        >
-          <button type="button" 
-            @click="closeModalCategory('edit')"
-            class="cursor-pointer w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"
-          >
-            Cancel
-          </button>
-          <button type="submit" 
-            class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-teal-400 focus:outline-none focus:shadow-outline-purple"
-            :class="{ 'opacity-50 cursor-not-allowed': loading }"
-            x-text="buttonLabel" 
-          >
-            Update
-          </button>
-        </footer>
-      </form>
-    </div>
-    <!-- End of modal edit backdrop -->
-    <div
-        x-cloak
-        x-show="isModalOpen.modalDelete"
-        x-transition:enter="transition ease-out duration-150"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
-      >
-    <!-- Modal -->
-    <div
-      x-show="isModalOpen.modalDelete"
-      x-transition:enter="transition ease-out duration-150"
-      x-transition:enter-start="opacity-0 transform translate-y-1/2"
-      x-transition:enter-end="opacity-100"
-      x-transition:leave="transition ease-in duration-150"
-      x-transition:leave-start="opacity-100"
-      x-transition:leave-end="opacity-0  transform translate-y-1/2"
-      @click.away="closeModalCategory('delete')"
-      class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
-      role="dialog"
-      id="modal-delete-category"
-    >
-      <div class="mt-4 mb-6">
-        <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">
-          Delete Data
-        </p>
-        <div class="mt-4">
-          <p class="text-sm text-gray-700 dark:text-gray-400">
-            Confirm to delete this data?
-          </p>
-        </div>
-      </div>
-      <footer
-        class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
-      >
-        <button
-          @click="closeModalCategory('delete')"
-          class="w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"
-        >
-          Cancel
-        </button>
-        <button @click="deleteCategory()"
-          class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-red-600  focus:outline-none focus:shadow-outline-purple"
-        >
-          Yes, Delete
-        </button>
-      </footer>
-    </div>
-  </div>
-  <!-- End of modal delete backdrop -->
-
-<div
-    x-cloak
-    x-show="toastResult.isOpen"
-    class="fixed z-30 flex items-center bg-black sm:items-center sm:justify-center"
-    style="left:0;right:0;bottom:0;height:80px;opacity: 0.75;"
-  >
-<div x-cloak x-show="toastResult.isOpen" 
-    x-transition.duration.500
-    :class="toastResult.status == 'ok' ?  'bg-teal-500' : 'bg-red-600' " 
-    class="fixed shadow-xl ml-4 rounded-md text-white transition text-sm" role="alert"
-    style="bottom:1rem;z-index: 33;">
-    <div class="flex justify-between items-center py-2 px-4">
-      <p class="font-semibold" x-text="toastResult.status"></p>
-        &nbsp;•
-      <p class="flex-1 font-semibold ml-2" x-text="toastResult.message"></p>
-      <button type="button" @click="closeToast()" class="inline-flex flex-shrink-0 justify-center items-center rounded-lg text-teal-800 opacity-50 hover:opacity-100 focus:outline-none focus:opacity-100">
-        <span class="text-2xl"><i class='bx bx-x'></i></span>
-      </button>
-    </div>
-  </div>
-</div>
-<!-- end of toast -->
+    
 
   <div class="container px-6 mx-auto">
     <div class="flex justify-between items-center">
@@ -440,12 +303,10 @@
         Categories
       </h2>
 
-      <button @click="openModalCategory('add')"
+      <button @click="openModal('add')"
       class="flex items-center justify-between px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
           <span>Tambah Category</span>
-          <svg class="w-5 h-5 ml-2" data-slot="icon" fill="none" stroke-width="2.5" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
-          </svg>
+          <span class="text-2xl ml-2"><i class='bx bxs-plus-circle'></i></span>
         </button>
     </div>
 
@@ -489,7 +350,7 @@
             <tr
               class="text-xs font-semibold border-t tracking-wide text-left text-white uppercase border-b dark:border-gray-700 bg-red-600"
             >
-              <th class="px-4 py-3">ID</th>
+              <th class="px-4 py-3">No.</th>
               <th class="px-4 py-3">Nama Kategori</th>
               <th class="px-4 py-3">Deskripsi Kategori</th>
               <th class="px-4 py-3 text-center">Aksi</th>
@@ -510,13 +371,13 @@
               
               <td class="px-4 py-3">
                   <div class="flex items-center justify-center space-x-4 text-sm">
-                    <button @click="openModalCategory('edit', item)"
+                    <button @click="openModal('edit', item)"
                       class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                       aria-label="Edit"
                     >
                       <span class="text-2xl"><i class='bx bxs-edit-alt'></i></span>
                     </button>
-                    <button @click="openModalCategory('delete',item.id)"
+                    <button @click="openModal('delete',item.id)"
                       class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                       aria-label="Delete"
                     >
@@ -540,24 +401,14 @@
             <ul class="inline-flex items-center">
               <li>
                 <button
-                  class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"
+                  class="mr-2 rounded-md focus:outline-none focus:shadow-outline-purple"
                   aria-label="Previous" @click="changePage(currentPage - 1)"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="w-4 h-4 fill-current"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
-                      fill-rule="evenodd"
-                    ></path>
-                  </svg>
+                  <span class="text-2xl"><i class='bx bx-chevron-left'></i></span>
                 </button>
               </li>
-              <template x-for="item in pages">
 
+              <template x-for="item in pages">
                 <li>
                   <button
                     class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
@@ -565,22 +416,13 @@
                   </button>
                 </li>
               </template>
+              
               <li>
                 <button
-                  class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"
-                  aria-label="Next" @click="changePage(currentPage + 1)"
+                  class="ml-2 rounded-md focus:outline-none focus:shadow-outline-purple"
+                  aria-label="Previous" @click="changePage(currentPage + 1)"
                 >
-                  <svg
-                    class="w-4 h-4 fill-current"
-                    aria-hidden="true"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clip-rule="evenodd"
-                      fill-rule="evenodd"
-                    ></path>
-                  </svg>
+                  <span class="text-2xl"><i class='bx bx-chevron-right'></i></span>
                 </button>
               </li>
             </ul>
@@ -590,6 +432,71 @@
       </div>
   </div>
 </div>
+
+<?php $this->load->view('admin/pages/modal_delete'); ?>
+<?php $this->load->view('admin/pages/toast_modal'); ?>
+<div
+  x-cloak
+  x-show="isModalOpen.modalEdit"
+  x-transition:enter="transition ease-out duration-150"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition ease-in duration-150"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+  class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
+>
+  <!-- Modal -->
+  <form
+    x-show="isModalOpen.modalEdit"
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0 transform translate-y-1/2"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0  transform translate-y-1/2"
+    class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
+    role="dialog"
+    id="modal-edit-category"
+    x-data="categoriesUpdate()"
+    @submit.prevent="updateData"
+  >
+    <div class="mt-4 mb-6">
+      <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">
+        Edit Data
+      </p>
+        <div class="mt-4">
+        <label class="block text-sm mt-2">
+          <span class="text-gray-700 dark:text-gray-400">Nama</span>
+          <input x-model="dataEdit.name" type="text" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="nama kategori" required>
+        </label>
+
+        <label class="block text-sm mt-2">
+          <span class="text-gray-700 dark:text-gray-400">Deskripsi</span>
+          <textarea x-model="dataEdit.description" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="deskripsi kategori" required></textarea>
+        </label>
+      </div>
+    </div>
+    <footer
+      class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
+    >
+      <button type="button" 
+        @click="closeModal('edit')"
+        class="cursor-pointer w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"
+      >
+        Cancel
+      </button>
+      <button type="submit" 
+        class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-teal-400 focus:outline-none focus:shadow-outline-purple"
+        :class="{ 'opacity-50 cursor-not-allowed': loading }"
+        x-text="buttonLabel" 
+      >
+        Update
+      </button>
+    </footer>
+  </form>
+</div>
+<!-- End of modal edit backdrop -->
 
 <div
     x-cloak
@@ -611,7 +518,7 @@
       x-transition:leave="transition ease-in duration-150"
       x-transition:leave-start="opacity-100"
       x-transition:leave-end="opacity-0  transform translate-y-1/2"
-      @click.away="closeModalCategory('add')"
+      @click.away="closeModal('add')"
       class="w-full px-6 py-4 overflow-hidden bg-white rounded-t-lg dark:bg-gray-800 sm:rounded-lg sm:m-4 sm:max-w-xl"
       role="dialog"
       id="modal-add-category"
@@ -637,7 +544,7 @@
       <footer
         class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
       >
-        <button type="button" @click="closeModalCategory('add')"
+        <button type="button" @click="closeModal('add')"
           class="w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"
         >
           Cancel
