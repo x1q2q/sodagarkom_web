@@ -6,6 +6,13 @@ class Categories extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
 	}
+	protected function load_templates($data){
+		$this->load->view('admin/template/header',$data);
+		$this->load->view('admin/template/sidebar',$data);
+		$this->load->view('admin/template/navbar',$data);
+		$this->load->view('admin/template/content',$data);
+		$this->load->view('admin/template/footer',$data);
+	}
 	public function index(){
 		$data = array(
 				'title' 		=> 'Categories | Sodagar Komputer',
@@ -13,18 +20,10 @@ class Categories extends CI_Controller {
 				'menu_active'	=> 'categories',
 				'data'			=> json_encode($this->m_categories->get_all())
 		);
-		// $this->load_templates($data);
-		$this->load->view('admin/template/header',$data);
-		$this->load->view('admin/template/sidebar',$data);
-		$this->load->view('admin/template/navbar',$data);
-		$this->load->view('admin/template/content',$data);
-		$this->load->view('admin/template/footer',$data);
+		$this->load_templates($data);
 	}
 	public function get_data(){
 		echo json_encode($this->m_categories->get_all());
-	}
-	protected function load_templates($data){
-		
 	}
 
 	public function insert(){
@@ -69,7 +68,7 @@ class Categories extends CI_Controller {
 			if($this->m_categories->update($data,$where)){
 				return$this->output
 		        ->set_content_type('application/json')
-		        ->set_output(json_encode(array('code' => 200, 'status' => 'ok','message' => 'Categoriy item has been updated!')));
+		        ->set_output(json_encode(array('code' => 200, 'status' => 'ok','message' => 'Category item has been updated!')));
 			}
 		}else{
 			return $this->output->set_content_type('application/json')
