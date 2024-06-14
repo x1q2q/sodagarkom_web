@@ -10,6 +10,10 @@ var categoryAsset = "<?= $category_assets; ?>";
         'modalDelete':false,
         'modalEdit':false
       },
+      filesUpload:null,
+      selectFile(event){
+        this.filesUpload = event.target.files[0]
+      },
       toastResult:{
         'status':'',
         'message':'',
@@ -80,22 +84,24 @@ var categoryAsset = "<?= $category_assets; ?>";
       categoriesInsert() {
         return {
           formData: {
-            name: '',
-            description: '',
+            name:'',
+            description:''
           },
           loading:false,
           buttonLabel: 'Submit',
           async submitData() {
+            this.formData.files = this.filesUpload;
             this.loading=true;
             this.buttonLabel="Submitting ...";
 
-            var result =  await fetch('<?= base_url(); ?>admin/categories/insert', {
+            const newFormData = new FormData(); 
+            for(const name in this.formData){
+              newFormData.append(name, this.formData[name]);
+            }
+
+            const result =  await fetch('<?= base_url(); ?>admin/categories/insert', {
               method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(this.formData)
+              body: newFormData
             }).then(function(response){
               if(response.ok) return response.json()
               return Promise.reject(response);
@@ -105,6 +111,7 @@ var categoryAsset = "<?= $category_assets; ?>";
                 this.loading=false;
                 this.buttonLabel='Submit';
             });
+            this.formData = {};
 
             if(!result) return;
 
@@ -125,18 +132,24 @@ var categoryAsset = "<?= $category_assets; ?>";
       },
       categoriesUpdate() {
         return {
+          formData:{},
           loading:false,
           buttonLabel: 'Update',
           async updateData() {
+            this.formData.name = this.dataEdit.name;
+            this.formData.description = this.dataEdit.description;
+            this.formData.edit_files = this.filesUpload;
             this.loading=true;
             this.buttonLabel="Updating ...";
-            var result = await fetch('<?= base_url(); ?>admin/categories/update/'+this.dataEdit.id, {
+
+            const newFormData = new FormData(); 
+            for(const name in this.formData){
+              newFormData.append(name, this.formData[name]);
+            }
+
+            const result =  await fetch('<?= base_url(); ?>admin/categories/update/'+this.dataEdit.id, {
               method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(this.dataEdit)
+              body: newFormData
             }).then(function(response){
               if(response.ok) return response.json()
               return Promise.reject(response);
@@ -145,7 +158,12 @@ var categoryAsset = "<?= $category_assets; ?>";
                 this.openToast('error', 'Response error');
                 this.loading=false;
                 this.buttonLabel='Update';
+                setTimeout(() => {
+                   window.location.reload();
+                }, 2000);
+
             });
+            this.formData = {};
 
 
             if(!result) return;
@@ -153,15 +171,15 @@ var categoryAsset = "<?= $category_assets; ?>";
             if(result.code == 200){
                this.closeModal('edit');
                this.openToast(result.status, result.message);
-               setTimeout(() => {
-                 window.location.reload();
-              }, 2000);
             }else{
               this.closeModal('edit');
               this.openToast(result.status, result.message);
               this.loading=false;
               this.buttonLabel = 'Update';
             }
+            setTimeout(() => {
+               window.location.reload();
+            }, 2000);
           }
         }
       },
@@ -368,7 +386,12 @@ var categoryAsset = "<?= $category_assets; ?>";
                 <span x-text="item.name"></span>
               </td>
               <td class="px-4 py-3 text-sm">
-                <img x-bind:src="categoryAsset + item.image_thumb" class="w-56">
+                <template x-if="item.image_thumb == ''">
+                  <span>-</span>
+                </template>
+                <template x-if="item.image_thumb != ''">
+                  <img x-bind:src="categoryAsset + item.image_thumb" class="w-56">
+                </template>
               </td>
               <td class="px-4 py-3 text-sm whitespace-break-spaces">
                 <span x-text="item.description"></span>
@@ -481,10 +504,10 @@ var categoryAsset = "<?= $category_assets; ?>";
           <textarea x-model="dataEdit.description" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="deskripsi kategori" required></textarea>
         </label>
 
-        <label class="block text-sm mt-2">
+        <label class="block text-sm mt-2" for="file_input">
           <span class="text-gray-700 dark:text-gray-400">Upload File</span>
-          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file">
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 5mb).</p>
+          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file" x-on:change="selectFile($event)" accept="image/png, image/jpg, image/jpeg">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 2mb).</p>
         </label>
       </div>
     </div>
@@ -535,6 +558,7 @@ var categoryAsset = "<?= $category_assets; ?>";
       id="modal-add-category"
       x-data="categoriesInsert()"
       @submit.prevent="submitData" 
+      enctype="multipart/form-data"
     >
       <div class="mt-4 mb-6">
         <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">
@@ -552,10 +576,11 @@ var categoryAsset = "<?= $category_assets; ?>";
             <textarea name="description" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="deskripsi kategori" x-model="formData.description" required></textarea>
           </label>
 
-          <label class="block text-sm mt-2">
+          <label class="block text-sm mt-2" for="file_input">
           <span class="text-gray-700 dark:text-gray-400">Upload File</span>
-          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file">
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 5mb).</p>
+          <input name="files" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" id="file_input" type="file"
+          x-on:change="selectFile($event)" accept="image/png, image/jpg, image/jpeg">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 2mb).</p>
           </label>
 
       </div>

@@ -92,7 +92,7 @@
             this.loading=true;
             this.buttonLabel="Submitting ...";
 
-            var result =  await fetch('<?= base_url(); ?>admin/products/insert', {
+            const result =  await fetch('<?= base_url(); ?>admin/products/insert', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
@@ -133,7 +133,7 @@
           async updateData() {
             this.loading=true;
             this.buttonLabel="Updating ...";
-            var result = await fetch('<?= base_url(); ?>admin/products/update/'+this.dataEdit.id, {
+            const result = await fetch('<?= base_url(); ?>admin/products/update/'+this.dataEdit.id, {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
