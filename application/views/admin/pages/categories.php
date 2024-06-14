@@ -83,10 +83,7 @@ var categoryAsset = "<?= $category_assets; ?>";
       },
       categoriesInsert() {
         return {
-          formData: {
-            name:'',
-            description:''
-          },
+          formData: {},
           loading:false,
           buttonLabel: 'Submit',
           async submitData() {
@@ -116,9 +113,9 @@ var categoryAsset = "<?= $category_assets; ?>";
             if(!result) return;
 
             if(result.code == 200){
-               this.closeModal('add');
-               this.openToast(result.status, result.message);
-               setTimeout(() => {
+              this.closeModal('add');
+              this.openToast(result.status, result.message);
+              setTimeout(() => {
                  window.location.reload();
               }, 2000);
             }else{
@@ -161,10 +158,8 @@ var categoryAsset = "<?= $category_assets; ?>";
                 setTimeout(() => {
                    window.location.reload();
                 }, 2000);
-
             });
             this.formData = {};
-
 
             if(!result) return;
 
@@ -504,9 +499,9 @@ var categoryAsset = "<?= $category_assets; ?>";
           <textarea x-model="dataEdit.description" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" rows="3" placeholder="deskripsi kategori" required></textarea>
         </label>
 
-        <label class="block text-sm mt-2" for="file_input">
+        <label class="block text-sm mt-2" for="edit_file_input">
           <span class="text-gray-700 dark:text-gray-400">Upload File</span>
-          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file" x-on:change="selectFile($event)" accept="image/png, image/jpg, image/jpeg">
+          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="edit_file_input" type="file" x-on:change="selectFile($event)" accept="image/png, image/jpg, image/jpeg">
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 2mb).</p>
         </label>
       </div>
@@ -577,10 +572,10 @@ var categoryAsset = "<?= $category_assets; ?>";
           </label>
 
           <label class="block text-sm mt-2" for="file_input">
-          <span class="text-gray-700 dark:text-gray-400">Upload File</span>
-          <input name="files" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" id="file_input" type="file"
-          x-on:change="selectFile($event)" accept="image/png, image/jpg, image/jpeg">
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 2mb).</p>
+            <span class="text-gray-700 dark:text-gray-400">Upload File</span>
+            <input name="files" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" id="file_input" type="file"
+            x-on:change="selectFile($event)" accept="image/png, image/jpg, image/jpeg">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 2mb).</p>
           </label>
 
       </div>

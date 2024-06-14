@@ -10,6 +10,10 @@
         'modalDelete':false,
         'modalEdit':false
       },
+      filesUpload:null,
+      selectFile(event){
+        this.filesUpload = event.target.files[0]
+      },
       toastResult:{
         'status':'',
         'message':'',
@@ -82,23 +86,22 @@
       },
       productsInsert() {
         return {
-          formData: {
-            name: '',
-            description: '',
-          },
+          formData: {},
           loading:false,
           buttonLabel: 'Submit',
           async submitData() {
+            this.formData.files = this.filesUpload;
             this.loading=true;
             this.buttonLabel="Submitting ...";
 
+            const newFormData = new FormData(); 
+            for(const name in this.formData){
+              newFormData.append(name, this.formData[name]);
+            }
+
             const result =  await fetch('<?= base_url(); ?>admin/products/insert', {
               method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(this.formData)
+              body: newFormData
             }).then(function(response){
               if(response.ok) return response.json()
               return Promise.reject(response);
@@ -108,13 +111,14 @@
                 this.loading=false;
                 this.buttonLabel='Submit';
             });
+            this.formData = {};
 
             if(!result) return;
 
             if(result.code == 200){
-               this.closeModal('add');
-               this.openToast(result.status, result.message);
-               setTimeout(() => {
+              this.closeModal('add');
+              this.openToast(result.status, result.message);
+              setTimeout(() => {
                  window.location.reload();
               }, 2000);
             }else{
@@ -128,18 +132,27 @@
       },
       productsUpdate() {
         return {
+          formData:{},
           loading:false,
           buttonLabel: 'Update',
           async updateData() {
+            this.formData.name = this.dataEdit.name;
+            this.formData.category_id = this.dataEdit.category_id;
+            this.formData.price = this.dataEdit.price;
+            this.formData.stock = this.dataEdit.stock;
+            this.formData.description = this.dataEdit.description;
+            this.formData.edit_files = this.filesUpload;
             this.loading=true;
             this.buttonLabel="Updating ...";
+
+            const newFormData = new FormData(); 
+            for(const name in this.formData){
+              newFormData.append(name, this.formData[name]);
+            }
+
             const result = await fetch('<?= base_url(); ?>admin/products/update/'+this.dataEdit.id, {
               method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(this.dataEdit)
+              body: newFormData
             }).then(function(response){
               if(response.ok) return response.json()
               return Promise.reject(response);
@@ -148,23 +161,26 @@
                 this.openToast('error', 'Response error');
                 this.loading=false;
                 this.buttonLabel='Update';
+                setTimeout(() => {
+                   window.location.reload();
+                }, 2000);
             });
-
+            this.formData = {};
 
             if(!result) return;
 
             if(result.code == 200){
-               this.closeModal('edit');
-               this.openToast(result.status, result.message);
-               setTimeout(() => {
-                 window.location.reload();
-              }, 2000);
+              this.closeModal('edit');
+              this.openToast(result.status, result.message);
             }else{
               this.closeModal('edit');
               this.openToast(result.status, result.message);
               this.loading=false;
               this.buttonLabel = 'Update';
             }
+            setTimeout(() => {
+               window.location.reload();
+            }, 2000);
           }
         }
       },
@@ -520,10 +536,10 @@
           </label>
         </div>
 
-        <label class="block text-sm mt-2">
+        <label class="block text-sm mt-2" for="edit_file_input">
           <span class="text-gray-700 dark:text-gray-400">Upload File</span>
-          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file">
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 5mb).</p>
+          <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_product" id="edit_file_input" type="file" x-on:change="selectFile($event)" accept="image/png, image/jpg, image/jpeg">
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_product">PNG, JPG or JPEG (MAX. 2mb).</p>
         </label>
 
         <label class="block text-sm mt-2">
@@ -617,10 +633,11 @@
             </label>
           </div>
 
-          <label class="block text-sm mt-2">
+          <label class="block text-sm mt-2" for="file_input">
             <span class="text-gray-700 dark:text-gray-400">Upload File</span>
-            <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" aria-describedby="file_input_category" id="file_input" type="file">
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_category">PNG, JPG or JPEG (MAX. 5mb).</p>
+            <input name="files" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" id="file_input" type="file"
+            x-on:change="selectFile($event)" accept="image/png, image/jpg, image/jpeg">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_product">PNG, JPG or JPEG (MAX. 2mb).</p>
           </label>
 
          <label class="block text-sm mt-2">

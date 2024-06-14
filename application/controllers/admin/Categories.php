@@ -30,7 +30,6 @@ class Categories extends CI_Controller {
 	public function insert(){
 		$name = test_input($this->input->post('name'));
 		$description = test_input($this->input->post('description'));
-		$files =  $this->input->post('files');
 
 		if(validate($name) && validate($description)){
 			$data = array(
@@ -67,7 +66,6 @@ class Categories extends CI_Controller {
 	public function update($id){
 		$name = test_input($this->input->post('name'));
 		$description = test_input($this->input->post('description'));
-		$files =  $this->input->post('edit_files');
 
 		if(validate($name) && validate($description)){
 			$data = array(
@@ -86,10 +84,12 @@ class Categories extends CI_Controller {
 				}else{
 					$upload = array('upload_data' => $this->upload->data());
 					$data['image_thumb'] = $upload['upload_data']['file_name'];
+					
 					$get_old_data = $this->m_categories->get_detail(array('id' => $id))->result();
 					$old_image_file = $get_old_data[0]->image_thumb;
-
-					$this->remove_old_image($old_image_file);
+					if($old_image_file != ''){						
+						$this->remove_old_image($old_image_file);
+					}					
 			 	}
 			}
 			$where = array('id' => $id);
@@ -117,9 +117,11 @@ class Categories extends CI_Controller {
 		$old_image_file = $get_old_data[0]->image_thumb;
 
 		if($this->m_categories->delete($where)){
-			// removing images
-			$this->remove_old_image($old_image_file);
-			
+			// removing images if its exist
+			if($old_image_file != ''){				
+				$this->remove_old_image($old_image_file);
+			}
+
 			return $this->output
 	        ->set_content_type('application/json')
 	        ->set_output(json_encode(array('code' => 200, 'status' => 'ok','message' => 'Category items has been deleted!')));
