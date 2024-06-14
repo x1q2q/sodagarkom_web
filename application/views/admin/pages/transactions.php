@@ -25,7 +25,6 @@
         }else if(typeModal == 'detail'){
           this.isModalOpen.modalDetail=false
         }
-        this.dataDetail={}
       },
       openModal(typeModal,item=null){
         if(typeModal == 'delete'){
@@ -107,11 +106,10 @@
           .then((result) => {
             if(result.code == 200){
                this.closeModal('payment');
-                 
-                 this.openToast(result.status, result.message);
-                 setTimeout(() => {
-                     window.location.reload();
-                }, 2000);                  
+               this.openToast(result.status, result.message);
+               setTimeout(() => {
+                   window.location.reload();
+              }, 2000);                  
             }
              this.closeModal('payment');       
           });

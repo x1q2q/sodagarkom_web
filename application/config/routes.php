@@ -53,5 +53,9 @@ $route['default_controller'] = 'home';
 $route['admin'] = 'admin/admin';
 $route['admin/login'] = 'admin/admin/login';
 
+$route['api/v1/products'] = 'api/v1/apiproduct';
+$route['api/v1/product/(:num)']['GET'] = 'api/v1/apiproduct/$1';
+$route['api/v1/product']['DELETE'] = 'api/v1/apiproduct/$1';
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

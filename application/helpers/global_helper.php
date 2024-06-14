@@ -18,3 +18,12 @@ function product_assets(){
 function payment_assets(){
 	return base_url('assets/uploads/payments/');
 }
+// for api structure response
+function general_response($status, $message, $resources){
+	return [
+		'data' 		=> $resources,
+		'rows'		=> count($resources),
+		'status'	=> $status,
+		'message'	=> $message
+	];
+}
