@@ -391,7 +391,7 @@
                 <span x-text="item.name"></span>
               </td>
               <td class="px-4 py-3 text-sm">
-                <span x-text="item.price"></span>
+                <span x-text="convertToRupiah(parseInt(item.price))"></span>
               </td>
               <td class="px-4 py-3 text-sm">
                 <span x-text="item.stock"></span>

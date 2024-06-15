@@ -26,7 +26,7 @@
           this.isModalOpen.modalDetail=false
         }
       },
-      openModal(typeModal,item=null){
+      openModal(typeModal, item){
         if(typeModal == 'delete'){
           this.isModalOpen.modalDelete = true
         }else if(typeModal == 'payment' && item != null){
@@ -311,7 +311,7 @@
                 <span x-text="item.customer_name"></span>
               </td>
               <td class="px-4 py-3 text-sm">
-                <span x-text="convertToRupiah(item.total_amount)"></span>
+                <span x-text="convertToRupiah(parseInt(item.total_amount))"></span>
               </td>
               <td class="px-4 py-3 text-sm text-center">
                 <template x-if="item.status == 'rejected'">
@@ -482,7 +482,7 @@
         <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
          <tr class="text-xs font-semibold border-t tracking-wide text-left tuppercase border-b dark:border-gray-700">
             <td class="px-4 py-3 text-sm bg-gray-100">Total Pembayaran Transaksi</td>
-            <td class="px-4 py-3 text-sm dark:text-white" x-text="convertToRupiah(dataDetail.total_amount)"></td>
+            <td class="px-4 py-3 text-sm dark:text-white" x-text="convertToRupiah(parseInt(dataDetail.total_amount))"></td>
           </tr>
         </tbody>
       </table>

@@ -23,8 +23,8 @@ class Transactions extends CI_Controller {
 		);
 		$this->load_templates($data);
 	}
-	public function get_data($transaction_id){
-		echo json_encode($this->m_transactions->get_transaction_detail($transaction_id));
+	public function get_data(){
+		echo json_encode($this->m_transactions->get_join());
 	}
 	public function transaction_details($transaction_id){
 		return $this->output->set_content_type('application/json')

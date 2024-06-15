@@ -22,7 +22,7 @@
               <?php } ?>
               <a
                 class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                href="<?= base_url('admin/'); ?>"
+                href="<?= base_url('admin/dashboard'); ?>"
               >
                 <span class="text-2xl"><i class='bx bxs-dashboard'></i></span>
                 <span class="ml-4">Dashboard</span>
@@ -132,7 +132,7 @@
               <?php } ?>
               <a
                 class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                href="<?= base_url('admin/'); ?>"
+                href="<?= base_url('admin/dashboard'); ?>"
               >
                 <span class="text-2xl"><i class='bx bxs-dashboard'></i></span>
                 <span class="ml-4">Dashboard</span>

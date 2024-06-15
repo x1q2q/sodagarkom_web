@@ -1,82 +1,466 @@
-<main class="h-full overflow-y-auto">
+<script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
+<script type="text/javascript">
+var statistics = <?= $statistics; ?>;
+document.addEventListener('alpine:init', () => {
+  Alpine.data('appDashboard', () => ({
+      stats:{
+        totalCustomers:statistics.total_customers,
+        totalRevenue:statistics.total_revenue,
+        totalProducts:statistics.total_products,
+        totalPendingTransaction:statistics.total_pending_transaction
+      },
+      dataDays:  <?= $data_by_days; ?>,
+      dataMonth:  <?= $data_by_month; ?>,
+      dataYears:  <?= $data_by_years; ?>,
+      dataTableDays(){
+        return {
+          items: [],
+          view: 5,
+          searchInput: '',
+          pages: [],
+          offset: 10,
+          pagination: {
+            total: this.dataDays.length,
+            lastPage: Math.ceil(this.dataDays.length / 5),
+            perPage: 5,
+            currentPage: 1,
+            from: 1,
+            to: 1 * 5
+          },
+          currentPage: 1,
+          sorted: {
+            field: 'date',
+            rule: 'desc'
+          },
+          initData() {
+            this.items = this.dataDays.sort(this.compareOnKey('date', 'desc'))
+            this.showPages()
+          },
+          compareOnKey(key, rule) {
+            return function(a, b) { 
+              if (key === 'date' || key === 'total_amount') {
+                let comparison = 0
+                const fieldA = a[key].toUpperCase()
+                const fieldB = b[key].toUpperCase()
+                if (rule === 'asc') {
+                  if (fieldA > fieldB) {
+                    comparison = 1;
+                  } else if (fieldA < fieldB) {
+                    comparison = -1;
+                  }
+                } else {
+                  if (fieldA < fieldB) {
+                    comparison = 1;
+                  } else if (fieldA > fieldB) {
+                    comparison = -1;
+                  }
+                }
+                return comparison
+              } else {
+                if (rule === 'asc') {
+                  return a.year - b.year
+                } else {
+                  return b.year - a.year
+                }
+              }
+            }
+          },
+          checkView(index) {
+            return index > this.pagination.to || index < this.pagination.from ? false : true
+          },
+          checkPage(item) {
+            if (item <= this.currentPage + 5) {
+              return true
+            }
+            return false
+          },
+          search(value) {
+            if (value.length > 1) {
+              const options = {
+                shouldSort: true,
+                keys: ['date', 'transaction_count','total_amount'],
+                threshold: 0
+              }                
+              const fuse = new Fuse(this.dataDays, options)
+              this.items = fuse.search(value).map(elem => elem.item)
+            } else {
+              this.items = this.dataDays
+            }
+            this.changePage(1)
+            this.showPages()
+          },
+          sort(field, rule) {
+            this.items = this.items.sort(this.compareOnKey(field, rule))
+            this.sorted.field = field
+            this.sorted.rule = rule
+          },
+          changePage(page) {
+            if (page >= 1 && page <= this.pagination.lastPage) {
+              this.currentPage = page
+              const total = this.items.length
+              const lastPage = Math.ceil(total / this.view) || 1
+              const from = (page - 1) * this.view + 1
+              let to = page * this.view
+              if (page === lastPage) {
+                to = total
+              }
+              this.pagination.total = total
+              this.pagination.lastPage = lastPage
+              this.pagination.perPage = this.view
+              this.pagination.currentPage = page
+              this.pagination.from = from
+              this.pagination.to = to
+              this.showPages()
+            }
+          },
+          showPages() {
+            const pages = []
+            let from = this.pagination.currentPage - Math.ceil(this.offset / 2)
+            if (from < 1) {
+              from = 1
+            }
+            let to = from + this.offset - 1
+            if (to > this.pagination.lastPage) {
+              to = this.pagination.lastPage
+            }
+            while (from <= to) {
+              pages.push(from)
+              from++
+            }
+            this.pages = pages;
+          },
+          changeView() {
+            this.changePage(1)
+            this.showPages()
+          },
+          isEmpty() {
+            return this.pagination.total ? false : true
+          }
+        }
+      },
+      dataTableMonth(){
+        return {
+          items: [],
+          view: 5,
+          searchInput: '',
+          pages: [],
+          offset: 10,
+          pagination: {
+            total: this.dataMonth.length,
+            lastPage: Math.ceil(this.dataMonth.length / 5),
+            perPage: 5,
+            currentPage: 1,
+            from: 1,
+            to: 1 * 5
+          },
+          currentPage: 1,
+          sorted: {
+            field: 'month',
+            rule: 'desc'
+          },
+          initData() {
+            this.items = this.dataMonth.sort(this.compareOnKey('month', 'desc'))
+            this.showPages()
+          },
+          compareOnKey(key, rule) {
+            return function(a, b) { 
+              if (key === 'year' || key === 'month' || key === 'total_amount') {
+                let comparison = 0
+                const fieldA = a[key].toUpperCase()
+                const fieldB = b[key].toUpperCase()
+                if (rule === 'asc') {
+                  if (fieldA > fieldB) {
+                    comparison = 1;
+                  } else if (fieldA < fieldB) {
+                    comparison = -1;
+                  }
+                } else {
+                  if (fieldA < fieldB) {
+                    comparison = 1;
+                  } else if (fieldA > fieldB) {
+                    comparison = -1;
+                  }
+                }
+                return comparison
+              } else {
+                if (rule === 'asc') {
+                  return a.year - b.year
+                } else {
+                  return b.year - a.year
+                }
+              }
+            }
+          },
+          checkView(index) {
+            return index > this.pagination.to || index < this.pagination.from ? false : true
+          },
+          checkPage(item) {
+            if (item <= this.currentPage + 5) {
+              return true
+            }
+            return false
+          },
+          search(value) {
+            if (value.length > 1) {
+              const options = {
+                shouldSort: true,
+                keys: ['year', 'month','transaction_count','total_amount'],
+                threshold: 0
+              }                
+              const fuse = new Fuse(this.dataMonth, options)
+              this.items = fuse.search(value).map(elem => elem.item)
+            } else {
+              this.items = this.dataMonth
+            }
+            this.changePage(1)
+            this.showPages()
+          },
+          sort(field, rule) {
+            this.items = this.items.sort(this.compareOnKey(field, rule))
+            this.sorted.field = field
+            this.sorted.rule = rule
+          },
+          changePage(page) {
+            if (page >= 1 && page <= this.pagination.lastPage) {
+              this.currentPage = page
+              const total = this.items.length
+              const lastPage = Math.ceil(total / this.view) || 1
+              const from = (page - 1) * this.view + 1
+              let to = page * this.view
+              if (page === lastPage) {
+                to = total
+              }
+              this.pagination.total = total
+              this.pagination.lastPage = lastPage
+              this.pagination.perPage = this.view
+              this.pagination.currentPage = page
+              this.pagination.from = from
+              this.pagination.to = to
+              this.showPages()
+            }
+          },
+          showPages() {
+            const pages = []
+            let from = this.pagination.currentPage - Math.ceil(this.offset / 2)
+            if (from < 1) {
+              from = 1
+            }
+            let to = from + this.offset - 1
+            if (to > this.pagination.lastPage) {
+              to = this.pagination.lastPage
+            }
+            while (from <= to) {
+              pages.push(from)
+              from++
+            }
+            this.pages = pages;
+          },
+          changeView() {
+            this.changePage(1)
+            this.showPages()
+          },
+          isEmpty() {
+            return this.pagination.total ? false : true
+          }
+        }
+      },
+      dataTableYears(){
+        return {
+          items: [],
+          view: 5,
+          searchInput: '',
+          pages: [],
+          offset: 10,
+          pagination: {
+            total: this.dataYears.length,
+            lastPage: Math.ceil(this.dataYears.length / 5),
+            perPage: 5,
+            currentPage: 1,
+            from: 1,
+            to: 1 * 5
+          },
+          currentPage: 1,
+          sorted: {
+            field: 'year',
+            rule: 'desc'
+          },
+          initData() {
+            this.items = this.dataYears.sort(this.compareOnKey('year', 'desc'))
+            this.showPages()
+          },
+          compareOnKey(key, rule) {
+            return function(a, b) { 
+              if (key === 'year' || key === 'total_amount') {
+                let comparison = 0
+                const fieldA = a[key].toUpperCase()
+                const fieldB = b[key].toUpperCase()
+                if (rule === 'asc') {
+                  if (fieldA > fieldB) {
+                    comparison = 1;
+                  } else if (fieldA < fieldB) {
+                    comparison = -1;
+                  }
+                } else {
+                  if (fieldA < fieldB) {
+                    comparison = 1;
+                  } else if (fieldA > fieldB) {
+                    comparison = -1;
+                  }
+                }
+                return comparison
+              } else {
+                if (rule === 'asc') {
+                  return a.year - b.year
+                } else {
+                  return b.year - a.year
+                }
+              }
+            }
+          },
+          checkView(index) {
+            return index > this.pagination.to || index < this.pagination.from ? false : true
+          },
+          checkPage(item) {
+            if (item <= this.currentPage + 5) {
+              return true
+            }
+            return false
+          },
+          search(value) {
+            if (value.length > 1) {
+              const options = {
+                shouldSort: true,
+                keys: ['year', 'transaction_count','total_amount'],
+                threshold: 0
+              }                
+              const fuse = new Fuse(this.dataYears, options)
+              this.items = fuse.search(value).map(elem => elem.item)
+            } else {
+              this.items = this.dataYears
+            }
+            this.changePage(1)
+            this.showPages()
+          },
+          sort(field, rule) {
+            this.items = this.items.sort(this.compareOnKey(field, rule))
+            this.sorted.field = field
+            this.sorted.rule = rule
+          },
+          changePage(page) {
+            if (page >= 1 && page <= this.pagination.lastPage) {
+              this.currentPage = page
+              const total = this.items.length
+              const lastPage = Math.ceil(total / this.view) || 1
+              const from = (page - 1) * this.view + 1
+              let to = page * this.view
+              if (page === lastPage) {
+                to = total
+              }
+              this.pagination.total = total
+              this.pagination.lastPage = lastPage
+              this.pagination.perPage = this.view
+              this.pagination.currentPage = page
+              this.pagination.from = from
+              this.pagination.to = to
+              this.showPages()
+            }
+          },
+          showPages() {
+            const pages = []
+            let from = this.pagination.currentPage - Math.ceil(this.offset / 2)
+            if (from < 1) {
+              from = 1
+            }
+            let to = from + this.offset - 1
+            if (to > this.pagination.lastPage) {
+              to = this.pagination.lastPage
+            }
+            while (from <= to) {
+              pages.push(from)
+              from++
+            }
+            this.pages = pages;
+          },
+          changeView() {
+            this.changePage(1)
+            this.showPages()
+          },
+          isEmpty() {
+            return this.pagination.total ? false : true
+          }
+        }
+      }
+  }));
+});
+</script>
+<main class="h-full overflow-y-auto" x-data="appDashboard">
   <div class="container px-6 mx-auto grid">
     <h2
       class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
     >
       Dashboard
     </h2>
-    <!-- CTA -->
-    <a
+    <div
       class="flex items-center justify-between p-4 mb-8 text-sm font-semibold text-purple-100 bg-red-600 rounded-lg shadow-md focus:outline-none focus:shadow-outline-red"
-      href="#"
     >
       <div class="flex items-center">
-        <svg
-          class="w-5 h-5 mr-2"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-          ></path>
-        </svg>
+        <span class="flex text-2xl mr-2"><i class='bx bxs-face'></i></span>
         <span>Selamat datang!</span>
       </div>
-    </a>
-    <!-- Cards -->
+    </div>
     <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
-      <!-- Card -->
       <div
         class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
       >
         <div
-          class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500"
+          class="p-3 mr-4 text-teal-500 bg-teal-100 rounded-full dark:text-teal-100 dark:bg-teal-500"
         >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"
-            ></path>
-          </svg>
+          <span class="text-2xl flex"><i class='bx bxs-user-account'></i></span>
         </div>
         <div>
           <p
             class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
           >
-            Total Customers
+            Total Kustomer
           </p>
           <p
             class="text-lg font-semibold text-gray-700 dark:text-gray-200"
-          >
-            120+
+          x-text="stats.totalCustomers">
+            
           </p>
         </div>
       </div>
-      <!-- Card -->
+
       <div
         class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
       >
         <div
           class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500"
         >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
+          <span class="text-2xl flex"><i class='bx bx-money-withdraw'></i></span>
         </div>
         <div>
           <p
             class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
           >
-            Orders Totals
+            Total Pendapatan
           </p>
-          <p
-            class="text-lg font-semibold text-gray-700 dark:text-gray-200"
-          >
-            Rp. 12.500.000
-          </p>
+          <template x-if="digits_count(parseInt(stats.totalRevenue)) <= 9">
+            <p class="text-lg font-semibold text-gray-700 dark:text-gray-200"
+            x-text="convertToRupiah(parseInt(stats.totalRevenue))">
+            </p>
+          </template>
+          <template x-if="digits_count(parseInt(stats.totalRevenue)) >= 10 && 
+            digits_count(parseInt(stats.totalRevenue)) <= 13">
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200"
+            x-text="convertToRupiah(parseInt(stats.totalRevenue))">
+            </p>
+          </template>
+          <template x-if="digits_count(parseInt(stats.totalRevenue)) > 13">
+            <p class="text-xs font-semibold text-gray-700 dark:text-gray-200"
+            x-text="convertToRupiah(parseInt(stats.totalRevenue))">
+            </p>
+          </template>         
         </div>
       </div>
       <!-- Card -->
@@ -86,417 +470,445 @@
         <div
           class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500"
         >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
-            ></path>
-          </svg>
+          <span class="text-2xl flex"><i class='bx bx-laptop'></i></span>
         </div>
         <div>
           <p
             class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
           >
-            Total Products
+            Total Produk
           </p>
           <p
             class="text-lg font-semibold text-gray-700 dark:text-gray-200"
-          >
-            376
+          x-text="stats.totalProducts">
           </p>
         </div>
       </div>
-      <!-- Card -->
       <div
         class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
       >
         <div
-          class="p-3 mr-4 text-teal-500 bg-teal-100 rounded-full dark:text-teal-100 dark:bg-teal-500"
+          class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500"
         >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
+          <span class="text-2xl flex"><i class='bx bxs-receipt'></i></span>
         </div>
         <div>
           <p
             class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
           >
-            Pending Transactions
+            Transaksi Pending
           </p>
           <p
             class="text-lg font-semibold text-gray-700 dark:text-gray-200"
-          >
-            35
+          x-text="stats.totalPendingTransaction">
           </p>
         </div>
       </div>
     </div>
 
-    <!-- New Table -->
-    <div class="w-full overflow-hidden rounded-lg shadow-xs mb-8">
+
+<div x-data="{ tab: 'tab1' }">
+  <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200">Rekap Transaksi Diterima</h2>
+  <ul class="flex mt-6 mb-4">
+    <li class="mr-1">
+      <a
+         class="bg-white rounded-md py-2 px-4 font-semibold dark:bg-gray-800"  href="#" 
+         :class="{ 'text-white bg-teal-500': tab == 'tab1'}"
+         @click.prevent="tab = 'tab1'"
+         >Transaksi Per Hari</a>
+    </li>
+    <li class="mr-1">
+      <a
+         class="bg-white rounded-md py-2 px-4 font-semibold dark:bg-gray-800 "
+         href="#"
+         :class="{ 'text-white bg-teal-500': tab == 'tab2'}"
+         @click.prevent="tab = 'tab2'"
+         >Transaksi Per Bulan</a
+        >
+    </li>
+    <li class="mr-1">
+      <a
+         class="bg-white rounded-md py-2 px-4 font-semibold dark:bg-gray-800"
+         href="#" 
+         :class="{ 'text-white bg-teal-500': tab == 'tab3'}"
+         @click.prevent="tab = 'tab3'"
+         >Transaksi Per Tahun</a
+        >
+    </li>
+  </ul>
+
+  <div>
+    <div x-show="tab == 'tab1'">
+      <div class="w-full overflow-y-auto rounded-lg shadow-xs mb-6"
+       x-data="dataTableDays()"
+       x-init="
+       initData();
+       $watch('searchInput', value => {
+          search(value)
+        })">
+      <div class="flex justify-between items-center bg-white py-4 px-2 dark:border-gray-700 dark:text-gray-400 dark:bg-gray-800">
+      <div class="flex flex-1 justify-start">
+              <div
+                class="relative w-full max-w-xl focus-within:text-purple-500"
+              >
+                <div class="absolute inset-y-0 flex items-center pl-2">
+                  <span class="text-1xl"><i class='bx bx-search-alt'></i></span>
+                </div>
+                <input x-model="searchInput"
+                  class="w-full pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:border-purple-300 focus:outline-none focus:shadow-outline-purple form-input"
+                  type="text"
+                  placeholder="Cari @tanggal / @jumlah / @nominal transaksi"
+                  aria-label="Search"
+                />
+              </div>
+            </div>
+              <select 
+                class="rounded-lg block mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" 
+                x-model="view" @change="changeView()">
+                <option value="5">Show 5 items</option>
+                <option value="10">Show 10 items</option>
+                <option value="25">Show 25 items</option>
+                <option value="50">Show 50 items</option>
+                <option value="100">Show 100 items</option>
+            </select>
+      </div>
+
       <div class="w-full overflow-x-auto">
-        <table class="w-full whitespace-no-wrap">
+        <table class="w-full whitespace-wrap table-auto">
           <thead>
             <tr
-              class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800"
+              class="text-xs font-semibold border-t tracking-wide text-left text-gray-600 uppercase border-b dark:border-gray-700 bg-gray-100 dark:bg-gray-800 dark:text-white"
             >
-              <th class="px-4 py-3">Client</th>
-              <th class="px-4 py-3">Amount</th>
-              <th class="px-4 py-3">Status</th>
-              <th class="px-4 py-3">Date</th>
+              <th class="px-4 py-3">No.</th>
+              <th class="px-4 py-3">Tanggal</th>
+              <th class="px-4 py-3">Jumlah Transaksi</th>
+              <th class="px-4 py-3">Nominal Transaksi</th>
+              <th class="px-4 py-3 text-center">Aksi</th>
             </tr>
           </thead>
-          <tbody
-            class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800"
-          >
-            <tr class="text-gray-700 dark:text-gray-400">
+          <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+          <template x-for="(item, index) in items" :key="index">
+            <tr x-show="checkView(index + 1)" class="text-gray-700 dark:text-gray-400">
+              <td class="px-4 py-3 text-sm" x-text="index+1"></td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="item.date"></span>
+              </td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="item.transaction_count"></span>
+              </td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="convertToRupiah(parseInt(item.total_amount))"></span>
+              </td>
+              
               <td class="px-4 py-3">
-                <div class="flex items-center text-sm">
-                  <!-- Avatar with inset shadow -->
-                  <div
-                    class="relative hidden w-8 h-8 mr-3 rounded-full md:block"
-                  >
-                    <img
-                      class="object-cover w-full h-full rounded-full"
-                      src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-                      alt=""
-                      loading="lazy"
-                    />
-                    <div
-                      class="absolute inset-0 rounded-full shadow-inner"
-                      aria-hidden="true"
-                    ></div>
+                  <div class="flex items-center justify-center space-x-4 text-sm">
+                    <button
+                      class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                      aria-label="Edit"
+                    >
+                      <span class="text-2xl"><i class='bx bxs-printer'></i></span>
+                    </button>
+                    
                   </div>
-                  <div>
-                    <p class="font-semibold">Hans Burger</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">
-                      10x Developer
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                $ 863.45
-              </td>
-              <td class="px-4 py-3 text-xs">
-                <span
-                  class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100"
-                >
-                  Approved
-                </span>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                6/10/2020
-              </td>
-            </tr>
-
-            <tr class="text-gray-700 dark:text-gray-400">
-              <td class="px-4 py-3">
-                <div class="flex items-center text-sm">
-                  <!-- Avatar with inset shadow -->
-                  <div
-                    class="relative hidden w-8 h-8 mr-3 rounded-full md:block"
-                  >
-                    <img
-                      class="object-cover w-full h-full rounded-full"
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&facepad=3&fit=facearea&s=707b9c33066bf8808c934c8ab394dff6"
-                      alt=""
-                      loading="lazy"
-                    />
-                    <div
-                      class="absolute inset-0 rounded-full shadow-inner"
-                      aria-hidden="true"
-                    ></div>
-                  </div>
-                  <div>
-                    <p class="font-semibold">Jolina Angelie</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">
-                      Unemployed
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                $ 369.95
-              </td>
-              <td class="px-4 py-3 text-xs">
-                <span
-                  class="px-2 py-1 font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:text-white dark:bg-orange-600"
-                >
-                  Pending
-                </span>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                6/10/2020
-              </td>
-            </tr>
-
-            <tr class="text-gray-700 dark:text-gray-400">
-              <td class="px-4 py-3">
-                <div class="flex items-center text-sm">
-                  <!-- Avatar with inset shadow -->
-                  <div
-                    class="relative hidden w-8 h-8 mr-3 rounded-full md:block"
-                  >
-                    <img
-                      class="object-cover w-full h-full rounded-full"
-                      src="https://images.unsplash.com/photo-1551069613-1904dbdcda11?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-                      alt=""
-                      loading="lazy"
-                    />
-                    <div
-                      class="absolute inset-0 rounded-full shadow-inner"
-                      aria-hidden="true"
-                    ></div>
-                  </div>
-                  <div>
-                    <p class="font-semibold">Sarah Curry</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">
-                      Designer
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                $ 86.00
-              </td>
-              <td class="px-4 py-3 text-xs">
-                <span
-                  class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700"
-                >
-                  Denied
-                </span>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                6/10/2020
-              </td>
-            </tr>
-
-            <tr class="text-gray-700 dark:text-gray-400">
-              <td class="px-4 py-3">
-                <div class="flex items-center text-sm">
-                  <!-- Avatar with inset shadow -->
-                  <div
-                    class="relative hidden w-8 h-8 mr-3 rounded-full md:block"
-                  >
-                    <img
-                      class="object-cover w-full h-full rounded-full"
-                      src="https://images.unsplash.com/photo-1551006917-3b4c078c47c9?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-                      alt=""
-                      loading="lazy"
-                    />
-                    <div
-                      class="absolute inset-0 rounded-full shadow-inner"
-                      aria-hidden="true"
-                    ></div>
-                  </div>
-                  <div>
-                    <p class="font-semibold">Rulia Joberts</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">
-                      Actress
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                $ 1276.45
-              </td>
-              <td class="px-4 py-3 text-xs">
-                <span
-                  class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100"
-                >
-                  Approved
-                </span>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                6/10/2020
-              </td>
-            </tr>
-
-            <tr class="text-gray-700 dark:text-gray-400">
-              <td class="px-4 py-3">
-                <div class="flex items-center text-sm">
-                  <!-- Avatar with inset shadow -->
-                  <div
-                    class="relative hidden w-8 h-8 mr-3 rounded-full md:block"
-                  >
-                    <img
-                      class="object-cover w-full h-full rounded-full"
-                      src="https://images.unsplash.com/photo-1546456073-6712f79251bb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-                      alt=""
-                      loading="lazy"
-                    />
-                    <div
-                      class="absolute inset-0 rounded-full shadow-inner"
-                      aria-hidden="true"
-                    ></div>
-                  </div>
-                  <div>
-                    <p class="font-semibold">Wenzel Dashington</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">
-                      Actor
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                $ 863.45
-              </td>
-              <td class="px-4 py-3 text-xs">
-                <span
-                  class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:text-gray-100 dark:bg-gray-700"
-                >
-                  Expired
-                </span>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                6/10/2020
-              </td>
-            </tr>
-
-            <tr class="text-gray-700 dark:text-gray-400">
-              <td class="px-4 py-3">
-                <div class="flex items-center text-sm">
-                  <!-- Avatar with inset shadow -->
-                  <div
-                    class="relative hidden w-8 h-8 mr-3 rounded-full md:block"
-                  >
-                    <img
-                      class="object-cover w-full h-full rounded-full"
-                      src="https://images.unsplash.com/photo-1502720705749-871143f0e671?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=b8377ca9f985d80264279f277f3a67f5"
-                      alt=""
-                      loading="lazy"
-                    />
-                    <div
-                      class="absolute inset-0 rounded-full shadow-inner"
-                      aria-hidden="true"
-                    ></div>
-                  </div>
-                  <div>
-                    <p class="font-semibold">Dave Li</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">
-                      Influencer
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                $ 863.45
-              </td>
-              <td class="px-4 py-3 text-xs">
-                <span
-                  class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100"
-                >
-                  Approved
-                </span>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                6/10/2020
-              </td>
-            </tr>
+                </td>
+              </tr>
+              </template>
           </tbody>
         </table>
       </div>
+
       <div
-        class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800"
+        class="flex justify-center w-full px-4 py-4 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800"
       >
-        <span class="flex items-center col-span-3">
-          Showing 21-30 of 100
-        </span>
-        <span class="col-span-2"></span>
         <!-- Pagination -->
-        <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
+        <div class="flex-1"></div>
+        <span class="flex items-center justify-center mt-2 sm:mt-auto sm:justify-end">
           <nav aria-label="Table navigation">
             <ul class="inline-flex items-center">
               <li>
                 <button
-                  class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"
-                  aria-label="Previous"
+                  class="mr-2 rounded-md focus:outline-none focus:shadow-outline-purple"
+                  aria-label="Previous" @click="changePage(currentPage - 1)"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="w-4 h-4 fill-current"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
-                      fill-rule="evenodd"
-                    ></path>
-                  </svg>
+                  <span class="text-2xl"><i class='bx bx-chevron-left'></i></span>
                 </button>
               </li>
+
+              <template x-for="item in pages">
+                <li>
+                  <button
+                    class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
+                    @click="changePage(item)" x-bind:class="{ 'text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600': currentPage === item }" x-text="item">
+                  </button>
+                </li>
+              </template>
+
               <li>
                 <button
-                  class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
+                  class="ml-2 rounded-md focus:outline-none focus:shadow-outline-purple"
+                  aria-label="Previous" @click="changePage(currentPage + 1)"
                 >
-                  1
-                </button>
-              </li>
-              <li>
-                <button
-                  class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
-                >
-                  2
-                </button>
-              </li>
-              <li>
-                <button
-                  class="px-3 py-1 text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600 rounded-md focus:outline-none focus:shadow-outline-purple"
-                >
-                  3
-                </button>
-              </li>
-              <li>
-                <button
-                  class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
-                >
-                  4
-                </button>
-              </li>
-              <li>
-                <span class="px-3 py-1">...</span>
-              </li>
-              <li>
-                <button
-                  class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
-                >
-                  8
-                </button>
-              </li>
-              <li>
-                <button
-                  class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
-                >
-                  9
-                </button>
-              </li>
-              <li>
-                <button
-                  class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"
-                  aria-label="Next"
-                >
-                  <svg
-                    class="w-4 h-4 fill-current"
-                    aria-hidden="true"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clip-rule="evenodd"
-                      fill-rule="evenodd"
-                    ></path>
-                  </svg>
+                  <span class="text-2xl"><i class='bx bx-chevron-right'></i></span>
                 </button>
               </li>
             </ul>
           </nav>
         </span>
+        <div class="flex-1"></div>
       </div>
     </div>
+    </div>
+
+    <div x-show="tab == 'tab2'">
+      <div class="w-full overflow-y-auto rounded-lg shadow-xs mb-6"
+       x-data="dataTableMonth()"
+       x-init="
+       initData();
+       $watch('searchInput', value => {
+          search(value)
+        })">
+      <div class="flex justify-between items-center bg-white py-4 px-2 dark:border-gray-700 dark:text-gray-400 dark:bg-gray-800">
+      <div class="flex flex-1 justify-start">
+              <div
+                class="relative w-full max-w-xl focus-within:text-purple-500"
+              >
+                <div class="absolute inset-y-0 flex items-center pl-2">
+                  <span class="text-1xl"><i class='bx bx-search-alt'></i></span>
+                </div>
+                <input x-model="searchInput"
+                  class="w-full pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:border-purple-300 focus:outline-none focus:shadow-outline-purple form-input"
+                  type="text"
+                  placeholder="Cari @tahun / @bulan / @jumlah / @nominal transaksi"
+                  aria-label="Search"
+                />
+              </div>
+            </div>
+              <select 
+                class="rounded-lg block mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" 
+                x-model="view" @change="changeView()">
+                <option value="5">Show 5 items</option>
+                <option value="10">Show 10 items</option>
+                <option value="25">Show 25 items</option>
+                <option value="50">Show 50 items</option>
+                <option value="100">Show 100 items</option>
+            </select>
+      </div>
+
+      <div class="w-full overflow-x-auto">
+        <table class="w-full whitespace-wrap table-auto">
+          <thead>
+            <tr
+              class="text-xs font-semibold border-t tracking-wide text-left text-gray-600 uppercase border-b dark:border-gray-700 bg-gray-100 dark:bg-gray-800 dark:text-white"
+            >
+              <th class="px-4 py-3">No.</th>
+              <th class="px-4 py-3">Tahun</th>
+              <th class="px-4 py-3">Bulan</th>
+              <th class="px-4 py-3">Jumlah Transaksi</th>
+              <th class="px-4 py-3">Nominal Transaksi</th>
+              <th class="px-4 py-3 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+          <template x-for="(item, index) in items" :key="index">
+            <tr x-show="checkView(index + 1)" class="text-gray-700 dark:text-gray-400">
+              <td class="px-4 py-3 text-sm" x-text="index+1"></td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="item.year"></span>
+              </td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="item.month"></span>
+              </td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="item.transaction_count"></span>
+              </td>
+              <td class="px-4 py-3 text-sm">
+                <span x-text="convertToRupiah(parseInt(item.total_amount))"></span>
+              </td>
+              
+              <td class="px-4 py-3">
+                  <div class="flex items-center justify-center space-x-4 text-sm">
+                    <button
+                      class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                      aria-label="Edit"
+                    >
+                      <span class="text-2xl"><i class='bx bxs-printer'></i></span>
+                    </button>
+                    
+                  </div>
+                </td>
+              </tr>
+              </template>
+          </tbody>
+        </table>
+      </div>
+
+      <div
+        class="flex justify-center w-full px-4 py-4 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800"
+      >
+        <!-- Pagination -->
+        <div class="flex-1"></div>
+        <span class="flex items-center justify-center mt-2 sm:mt-auto sm:justify-end">
+          <nav aria-label="Table navigation">
+            <ul class="inline-flex items-center">
+              <li>
+                <button
+                  class="mr-2 rounded-md focus:outline-none focus:shadow-outline-purple"
+                  aria-label="Previous" @click="changePage(currentPage - 1)"
+                >
+                  <span class="text-2xl"><i class='bx bx-chevron-left'></i></span>
+                </button>
+              </li>
+
+              <template x-for="item in pages">
+                <li>
+                  <button
+                    class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
+                    @click="changePage(item)" x-bind:class="{ 'text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600': currentPage === item }" x-text="item">
+                  </button>
+                </li>
+              </template>
+
+              <li>
+                <button
+                  class="ml-2 rounded-md focus:outline-none focus:shadow-outline-purple"
+                  aria-label="Previous" @click="changePage(currentPage + 1)"
+                >
+                  <span class="text-2xl"><i class='bx bx-chevron-right'></i></span>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </span>
+        <div class="flex-1"></div>
+      </div>
+    </div>
+    </div>
+    </div>
+    <div x-show="tab == 'tab3'">
+       <div class="w-full overflow-y-auto rounded-lg shadow-xs mb-6"
+         x-data="dataTableYears()"
+         x-init="
+         initData();
+         $watch('searchInput', value => {
+            search(value)
+          })">
+        <div class="flex justify-between items-center bg-white py-4 px-2 dark:border-gray-700 dark:text-gray-400 dark:bg-gray-800">
+        <div class="flex flex-1 justify-start">
+                <div
+                  class="relative w-full max-w-xl focus-within:text-purple-500"
+                >
+                  <div class="absolute inset-y-0 flex items-center pl-2">
+                    <span class="text-1xl"><i class='bx bx-search-alt'></i></span>
+                  </div>
+                  <input x-model="searchInput"
+                    class="w-full pl-8 pr-2 text-sm text-gray-700 placeholder-gray-600 bg-gray-100 border-0 rounded-md dark:placeholder-gray-500 dark:focus:shadow-outline-gray dark:focus:placeholder-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:placeholder-gray-500 focus:bg-white focus:border-purple-300 focus:outline-none focus:shadow-outline-purple form-input"
+                    type="text"
+                    placeholder="Cari @tahun / @jumlah / @nominal transaksi"
+                    aria-label="Search"
+                  />
+                </div>
+              </div>
+                <select 
+                  class="rounded-lg block mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" 
+                  x-model="view" @change="changeView()">
+                  <option value="5">Show 5 items</option>
+                  <option value="10">Show 10 items</option>
+                  <option value="25">Show 25 items</option>
+                  <option value="50">Show 50 items</option>
+                  <option value="100">Show 100 items</option>
+              </select>
+        </div>
+
+        <div class="w-full overflow-x-auto">
+          <table class="w-full whitespace-wrap table-auto">
+            <thead>
+              <tr
+                class="text-xs font-semibold border-t tracking-wide text-left text-gray-600 uppercase border-b dark:border-gray-700 bg-gray-100 dark:bg-gray-800 dark:text-white"
+              >
+                <th class="px-4 py-3">No.</th>
+                <th class="px-4 py-3">Tahun</th>
+                <th class="px-4 py-3">Jumlah Transaksi</th>
+                <th class="px-4 py-3">Nominal Transaksi</th>
+                <th class="px-4 py-3 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+            <template x-for="(item, index) in items" :key="index">
+              <tr x-show="checkView(index + 1)" class="text-gray-700 dark:text-gray-400">
+                <td class="px-4 py-3 text-sm" x-text="index+1"></td>
+                <td class="px-4 py-3 text-sm">
+                  <span x-text="item.year"></span>
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  <span x-text="item.transaction_count"></span>
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  <span x-text="convertToRupiah(parseInt(item.total_amount))"></span>
+                </td>
+                
+                <td class="px-4 py-3">
+                    <div class="flex items-center justify-center space-x-4 text-sm">
+                      <button
+                        class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                        aria-label="Edit"
+                      >
+                        <span class="text-2xl"><i class='bx bxs-printer'></i></span>
+                      </button>
+                      
+                    </div>
+                  </td>
+                </tr>
+                </template>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          class="flex justify-center w-full px-4 py-4 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800"
+        >
+          <!-- Pagination -->
+          <div class="flex-1"></div>
+          <span class="flex items-center justify-center mt-2 sm:mt-auto sm:justify-end">
+            <nav aria-label="Table navigation">
+              <ul class="inline-flex items-center">
+                <li>
+                  <button
+                    class="mr-2 rounded-md focus:outline-none focus:shadow-outline-purple"
+                    aria-label="Previous" @click="changePage(currentPage - 1)"
+                  >
+                    <span class="text-2xl"><i class='bx bx-chevron-left'></i></span>
+                  </button>
+                </li>
+
+                <template x-for="item in pages">
+                  <li>
+                    <button
+                      class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
+                      @click="changePage(item)" x-bind:class="{ 'text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600': currentPage === item }" x-text="item">
+                    </button>
+                  </li>
+                </template>
+
+                <li>
+                  <button
+                    class="ml-2 rounded-md focus:outline-none focus:shadow-outline-purple"
+                    aria-label="Previous" @click="changePage(currentPage + 1)"
+                  >
+                    <span class="text-2xl"><i class='bx bx-chevron-right'></i></span>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </span>
+          <div class="flex-1"></div>
+        </div>
+      </div>
+      </div>
+      <!-- end tabs -->
+    </div>
+
+  </div>
+</div>
 
     </div>
 </main>
