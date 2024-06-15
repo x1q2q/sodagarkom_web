@@ -2,7 +2,6 @@
 <script type="text/javascript">
 var statistics = <?= $statistics; ?>;
 let urlCetak = "<?= base_url('admin/dashboard/cetak_laporan/'); ?>";
-console.log(urlCetak);
 document.addEventListener('alpine:init', () => {
   Alpine.data('appDashboard', () => ({
       stats:{
@@ -396,7 +395,7 @@ document.addEventListener('alpine:init', () => {
 });
 </script>
 <main class="h-full overflow-y-auto" x-data="appDashboard">
-  <div class="container px-6 mx-auto grid">
+  <div class="container px-6 mx-auto">
     <h2
       class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
     >
@@ -508,7 +507,6 @@ document.addEventListener('alpine:init', () => {
       </div>
     </div>
 
-
 <div x-data="{ tab: 'tab1' }">
   <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200">Rekap Transaksi Diterima</h2>
   <ul class="flex mt-6 mb-4">
@@ -517,7 +515,7 @@ document.addEventListener('alpine:init', () => {
          class="bg-white rounded-md py-2 px-4 font-semibold dark:bg-gray-800"  href="#" 
          :class="{ 'text-white bg-teal-500': tab == 'tab1'}"
          @click.prevent="tab = 'tab1'"
-         >Transaksi Per Hari</a>
+         >Per Hari</a>
     </li>
     <li class="mr-1">
       <a
@@ -525,7 +523,7 @@ document.addEventListener('alpine:init', () => {
          href="#"
          :class="{ 'text-white bg-teal-500': tab == 'tab2'}"
          @click.prevent="tab = 'tab2'"
-         >Transaksi Per Bulan</a
+         >Per Bulan</a
         >
     </li>
     <li class="mr-1">
@@ -534,12 +532,11 @@ document.addEventListener('alpine:init', () => {
          href="#" 
          :class="{ 'text-white bg-teal-500': tab == 'tab3'}"
          @click.prevent="tab = 'tab3'"
-         >Transaksi Per Tahun</a
+         >Per Tahun</a
         >
     </li>
   </ul>
 
-  <div>
     <div x-show="tab == 'tab1'">
       <div class="w-full overflow-y-auto rounded-lg shadow-xs mb-6"
        x-data="dataTableDays()"
@@ -785,7 +782,7 @@ document.addEventListener('alpine:init', () => {
       </div>
     </div>
     </div>
-    </div>
+
     <div x-show="tab == 'tab3'">
        <div class="w-full overflow-y-auto rounded-lg shadow-xs mb-6"
          x-data="dataTableYears()"
@@ -909,7 +906,4 @@ document.addEventListener('alpine:init', () => {
     </div>
 
   </div>
-</div>
-
-    </div>
 </main>
