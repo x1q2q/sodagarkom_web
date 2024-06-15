@@ -1,6 +1,8 @@
 <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
 <script type="text/javascript">
 var statistics = <?= $statistics; ?>;
+let urlCetak = "<?= base_url('admin/dashboard/cetak_laporan/'); ?>";
+console.log(urlCetak);
 document.addEventListener('alpine:init', () => {
   Alpine.data('appDashboard', () => ({
       stats:{
@@ -602,12 +604,12 @@ document.addEventListener('alpine:init', () => {
               
               <td class="px-4 py-3">
                   <div class="flex items-center justify-center space-x-4 text-sm">
-                    <button
+                    <a :href="urlCetak + 'hari/' + item.date" 
                       class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                      aria-label="Edit"
+                      aria-label="Print"
                     >
                       <span class="text-2xl"><i class='bx bxs-printer'></i></span>
-                    </button>
+                    </a>
                     
                   </div>
                 </td>
@@ -727,12 +729,12 @@ document.addEventListener('alpine:init', () => {
               
               <td class="px-4 py-3">
                   <div class="flex items-center justify-center space-x-4 text-sm">
-                    <button
+                    <a :href="urlCetak + 'bulan/' + item.month + '-' + item.year" 
                       class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                       aria-label="Edit"
                     >
                       <span class="text-2xl"><i class='bx bxs-printer'></i></span>
-                    </button>
+                    </a>
                     
                   </div>
                 </td>
@@ -848,13 +850,12 @@ document.addEventListener('alpine:init', () => {
                 
                 <td class="px-4 py-3">
                     <div class="flex items-center justify-center space-x-4 text-sm">
-                      <button
+                      <a :href="urlCetak + 'tahun/' + item.year" 
                         class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                         aria-label="Edit"
                       >
                         <span class="text-2xl"><i class='bx bxs-printer'></i></span>
-                      </button>
-                      
+                      </a>
                     </div>
                   </td>
                 </tr>

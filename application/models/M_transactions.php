@@ -9,10 +9,13 @@ class M_transactions extends CI_Model {
 				->order_by('id','desc')->get();
 		return $query->result();
 	}
-	public function get_join(){
+	public function get_join($where = []){
 		$this->db->select('t.*, c.username as customer_name');
 	    $this->db->from('transactions t');
 	    $this->db->join('customers c','c.id=t.customer_id');
+	    if(!empty($where)){
+	    	$this->db->where($where);
+	    }
 	    $this->db->order_by('t.id','desc');
 	    $data = $this->db->get()->result();
 	    return $data;

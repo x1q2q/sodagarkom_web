@@ -17,7 +17,12 @@ class M_dashboard extends CI_Model {
 	    return $data[0]->total_revenue;
 	}
 	public function get_transaction_per($type){
-		$query = $this->db->from($type)->get();
+		$query = $this->db->from('transactions_per_'.$type)->get();
+		return $query->result();
+	}
+	public function get_detail_transaction($type,$where){
+		$query = $this->db->from('transactions_per_'.$type)
+				->where($where)->get();
 		return $query->result();
 	}
 	

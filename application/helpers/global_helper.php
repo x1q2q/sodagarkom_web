@@ -27,3 +27,8 @@ function general_response($status, $message, $resources){
 		'message'	=> $message
 	];
 }
+function get_waktu($strip,$format){
+	$asal = new Datetime($strip);
+	$waktu = $asal->format($format);
+	return $waktu;
+}

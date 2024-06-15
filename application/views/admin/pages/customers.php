@@ -193,7 +193,7 @@
           view: 5,
           searchInput: '',
           pages: [],
-          offset: 10,
+          offset: 15,
           pagination: {
             total: this.dataSources.length,
             lastPage: Math.ceil(this.dataSources.length / 5),
