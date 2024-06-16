@@ -5,7 +5,12 @@ use Dompdf\Dompdf;
 class Dashboard extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
-		$this->load->model('m_dashboard');
+		if(empty($this->session->userdata('admin_id'))){
+			redirect('admin/login');
+			return false;
+		}else{
+			$this->load->model('m_dashboard');
+		}		
 	}
 	public function index(){
 		$data = array(
@@ -34,11 +39,6 @@ class Dashboard extends CI_Controller {
 		$this->load->view('admin/template/navbar',$data);
 		$this->load->view('admin/template/content',$data);
 		$this->load->view('admin/template/footer',$data);
-	}
-	public function login(){
-		$data = array('title' => 'Login Page | Sodagar Komputer');
-		$this->load->view('admin/template/header',$data);
-		$this->load->view('admin/pages/login');
 	}
 	public function cetak_laporan($tipe, $date){
 	    $this->load->library('pdf');

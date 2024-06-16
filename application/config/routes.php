@@ -51,7 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['default_controller'] = 'home';
 $route['admin'] = 'admin/dashboard';
-$route['admin/login'] = 'admin/dashboard/login';
+$route['admin/login'] = 'home/login';
 
 $route['api/v1/products'] = 'api/v1/apiproduct';
 $route['api/v1/product/(:num)']['GET'] = 'api/v1/apiproduct/$1';

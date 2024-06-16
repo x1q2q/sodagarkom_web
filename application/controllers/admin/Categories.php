@@ -5,6 +5,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Categories extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
+		if(empty($this->session->userdata('admin_id'))){
+			redirect('admin/login');
+			return false;
+		}
 	}
 	protected function load_templates($data){
 		$this->load->view('admin/template/header',$data);

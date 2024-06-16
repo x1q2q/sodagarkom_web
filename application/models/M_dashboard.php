@@ -24,5 +24,10 @@ class M_dashboard extends CI_Model {
 		$query = $this->db->from('transactions_per_'.$type)
 				->where($where)->get();
 		return $query->result();
-	}	
+	}
+	public function get_detail($where){
+		$query = $this->db->from('admins')
+				->where($where)->get();
+		return $query;
+	}
 }

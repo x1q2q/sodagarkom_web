@@ -7,8 +7,8 @@
 <div x-cloak x-show="toastResult.isOpen" 
     x-transition.duration.500
     :class="toastResult.status == 'ok' ?  'bg-green-600' : 'bg-red-600' " 
-    class="fixed shadow-xl ml-4 rounded-md text-white transition text-sm" role="alert"
-    style="bottom:1rem;z-index: 40!important;">
+    class="flex text-center shadow-xl rounded-md text-white transition text-sm" role="alert"
+    style="bottom:1rem;z-index: 40!important;margin: auto!important;">
     <div class="flex justify-between items-center py-2 px-4">
       <p class="font-semibold" x-text="toastResult.status"></p>
         &nbsp;•
