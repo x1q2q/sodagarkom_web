@@ -35,4 +35,13 @@ class M_products extends CI_Model {
 		$query = $this->db->get();
 		return $query;
 	}
+	public function update_stock($handleTo, $qty, $product_id){
+		if($handleTo == 'accepted'){
+			$this->db->set('stock', 'stock-'.$qty, FALSE);
+		}else if($handleTo == 'rejected'){
+			$this->db->set('stock_temporary', 'stock_temporary+'.$qty, FALSE);
+		}
+		$this->db->where('id', $product_id);
+		$this->db->update('products');
+	}
 }

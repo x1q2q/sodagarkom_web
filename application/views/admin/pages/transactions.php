@@ -94,8 +94,9 @@
             }
           });
       },
-      async acceptTransaction(){
-        await fetch('<?= base_url(); ?>admin/transactions/accept_payment/'+this.dataDetail.id, {
+      async handlePaymentProof(handleTo){
+        let handle = handleTo+'/';
+        await fetch('<?= base_url(); ?>admin/transactions/handle_payment_proof/'+handle+this.dataDetail.id, {
               method: 'GET',
               headers: {
                 'Accept': 'application/json',
@@ -322,10 +323,10 @@
                     <img :src="paymentAsset + item.payment_proof" style="max-height:100px">
                   </div>
                 </template>
-                <template x-if="item.status == 'pending' && item.payment_proof === ''">
+                <template x-if="item.status == 'reserved'">
                   <span class="text-xs">belum ada pembayaran</span>
                 </template>
-                <template x-if="item.status == 'pending' && item.payment_proof !== '' ">
+                <template x-if="item.status == 'pending'">
                   <div>
                     <span class="text-xs">sudah ada pembayaran</span>
                     <button @click="openModal('payment', item)" class="w-full flex items-center justify-center mt-2 px-2 py-1 text-sm font-small leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-md active:bg-green-700 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
@@ -336,6 +337,11 @@
                 </template>
               </td>
               <td class="px-4 py-3 text-sm">
+                <template x-if="item.status == 'reserved' ">
+                  <span
+                    class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:text-gray-100 dark:bg-gray-700" x-text="item.status">
+                  </span>
+                </template>
                 <template x-if="item.status == 'accepted' ">
                   <span
                     class="px-2 py-1 font-semibold leading-tight rounded-full text-green-700 bg-green-100 dark:text-green-100 dark:bg-green-700" x-text="item.status">
@@ -534,7 +540,7 @@
         </p>
         <div class="mt-4">
           <p class="text-sm text-gray-700 dark:text-gray-400">
-            Konfirmasi untuk menyetujui bukti pembayaran ini?
+            Konfirmasi bukti pembayaran, atau batalkan transaksi ini?
           </p>
           <template x-if="dataDetail.payment_proof != '' && dataDetail.payment_proof != undefined">
             <div class="flex p-2 rounded-lg justify-center bg-gray-50">
@@ -544,15 +550,14 @@
         </div>
       </div>
       <footer
-        class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
+        class="flex flex-col items-center justify-center px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
       >
-        <button
-          @click="closeModal('payment')"
-          class="w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray"
+        <button @click="handlePaymentProof('rejected')"
+          class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-red-600  focus:outline-none focus:shadow-outline-purple"
         >
-          Cancel
+          Batalkan Transaksi
         </button>
-        <button @click="acceptTransaction()"
+        <button @click="handlePaymentProof('accepted')"
           class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-teal-400 focus:outline-none focus:shadow-outline-purple"
         >
           Ya, Konfirmasi

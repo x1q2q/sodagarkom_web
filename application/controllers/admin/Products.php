@@ -41,6 +41,7 @@ class Products extends CI_Controller {
 				'description' => $description,
 				'price' => $price,
 				'stock' => $stock,
+				'stock_temporary' => $stock,
 				'category_id' => $category_id
 			);
 			if(!empty($_FILES['files']['name'])){
@@ -82,6 +83,7 @@ class Products extends CI_Controller {
 				'description' => $description,
 				'price' => $price,
 				'stock' => $stock,
+				'stock_temporary' => $stock,
 				'category_id' => $category_id
 			);
 			if(!empty($_FILES['edit_files']['name'])){

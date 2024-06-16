@@ -24,6 +24,5 @@ class M_dashboard extends CI_Model {
 		$query = $this->db->from('transactions_per_'.$type)
 				->where($where)->get();
 		return $query->result();
-	}
-	
+	}	
 }

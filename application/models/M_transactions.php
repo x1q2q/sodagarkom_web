@@ -48,4 +48,11 @@ class M_transactions extends CI_Model {
 		$query = $this->db->get();
 		return $query;
 	}
+	public function get_trx_detail($transaction_id){
+		$where = array('transaction_id' => $transaction_id);
+		$this->db->from('transaction_details')
+				 ->where($where);
+		$query = $this->db->get();
+		return $query->result();
+	}
 }

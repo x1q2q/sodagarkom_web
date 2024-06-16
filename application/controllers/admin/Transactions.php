@@ -30,14 +30,25 @@ class Transactions extends CI_Controller {
 		return $this->output->set_content_type('application/json')
 		        ->set_output(json_encode(array('code' => 200, 'status' => 'ok','message' => 'Transaction details succes retrieved!', 'data' => $this->m_transactions->get_transaction_detail($transaction_id))));
 	}
-	public function accept_payment($id){
-		$data = array('status' => 'accepted');
+	public function change_stock($handleTo,$transaction_id){
+		// looping on transaction_details get where transaction id
+		// if accepted [on id], stock = stock - (qty value on trx)
+		// else if rejected [on id], stock_temporary = stock_temporary + (qty value on trx)
+		$result = $this->m_transactions->get_trx_detail($transaction_id);
+		foreach($result as $trx_detail){
+			// do update stock/stock_temporary on products
+			$this->m_products->update_stock($handleTo, $trx_detail->quantity, $trx_detail->product_id);
+		}
+	}
+	public function handle_payment_proof($handleTo, $id){
+		// $handleTo should be 'accepted' or 'rejected'
+		$data = array('status' => $handleTo);
 		$where = array('id' => $id);
 
 		if($this->m_transactions->update($data,$where)){
-			return $this->output
-	        ->set_content_type('application/json')
-	        ->set_output(json_encode(array('code' => 200, 'status' => 'ok','message' => 'Transaction item has been accepted!')));
+			$this->change_stock($handleTo,$id);
+			return $this->output->set_content_type('application/json')
+	        ->set_output(json_encode(array('code' => 200, 'status' => 'ok','message' => 'Transaction item has been '.$handleTo.'!')));
 		}
 	}
 	public function delete($id){
