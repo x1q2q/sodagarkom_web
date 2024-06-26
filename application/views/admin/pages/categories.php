@@ -1,6 +1,7 @@
 <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
 <script type="text/javascript">
 var categoryAsset = "<?= $category_assets; ?>";
+var assetsImg = "<?= base_url('assets/img/'); ?>";
  document.addEventListener('alpine:init', () => {
   let timer;
   Alpine.data('appCategory', () => ({
@@ -382,7 +383,7 @@ var categoryAsset = "<?= $category_assets; ?>";
               </td>
               <td class="px-4 py-3 text-sm">
                 <template x-if="item.image_thumb == ''">
-                  <span>-</span>
+                  <img x-bind:src="assetsImg + 'no-image.png' " style="width:8rem">
                 </template>
                 <template x-if="item.image_thumb != ''">
                   <img x-bind:src="categoryAsset + item.image_thumb" class="w-56">

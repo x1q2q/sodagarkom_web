@@ -1,6 +1,7 @@
 <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
 <script type="text/javascript">
  var paymentAsset = "<?= $payment_assets; ?>";
+ var assetsImg = "<?= base_url('assets/img/'); ?>";
  document.addEventListener('alpine:init', () => {
   let timer;
   Alpine.data('appTransaction', () => ({
@@ -319,8 +320,13 @@
                   <span class="text-xs">transaksi dibatalkan</span>
                 </template>
                 <template x-cloak x-if="item.status == 'accepted'">
-                  <div class="flex justify-center bg-gray-50 p-2">
-                    <img :src="paymentAsset + item.payment_proof" style="max-height:100px">
+                  <div class="flex justify-center bg-gray-50 p-2">                    
+                    <template x-if="item.payment_proof == '' || item.payment_proof == null">
+                      <img x-bind:src="assetsImg + 'no-image.png' " style="max-height:100px">
+                    </template>
+                    <template x-if="item.payment_proof != '' && item.payment_proof != null">
+                      <img :src="paymentAsset + item.payment_proof" style="max-height:100px" onerror="this.src='<?= base_url('assets/img/'); ?>no-image.png'">
+                    </template>
                   </div>
                 </template>
                 <template x-if="item.status == 'reserved'">
@@ -542,11 +548,14 @@
           <p class="text-sm text-gray-700 dark:text-gray-400">
             Konfirmasi bukti pembayaran, atau batalkan transaksi ini?
           </p>
-          <template x-if="dataDetail.payment_proof != '' && dataDetail.payment_proof != undefined">
             <div class="flex p-2 rounded-lg justify-center bg-gray-50">
-              <img class="rounded-lg" :src="paymentAsset + dataDetail.payment_proof" style="max-height: 350px;">
-            </div>
-          </template>      
+              <template x-if="dataDetail.payment_proof == '' || dataDetail.payment_proof == null || dataDetail.payment_proof == undefined">
+                <i class="text-red-700">*Tidak ada gambar, transaksi tidak bisa dikonfirmasi!</i>
+              </template>
+              <template x-if="dataDetail.payment_proof != '' && dataDetail.payment_proof != null && dataDetail.payment_proof != undefined">
+                <img class="rounded-lg" :src="paymentAsset + dataDetail.payment_proof" style="max-height: 350px;" onerror="this.src='<?= base_url('assets/img/'); ?>no-image.png'" >
+              </template>
+            </div>  
         </div>
       </div>
       <footer
@@ -557,11 +566,21 @@
         >
           Batalkan Transaksi
         </button>
-        <button @click="handlePaymentProof('accepted')"
-          class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-teal-400 focus:outline-none focus:shadow-outline-purple"
+        <template x-if="dataDetail.payment_proof == '' || dataDetail.payment_proof == null || dataDetail.payment_proof == undefined">
+          <button disabled 
+          class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-teal-500 opacity-50 cursor-not-allowed border border-transparent disabled rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-teal-400 focus:outline-none focus:shadow-outline-purple"
         >
           Ya, Konfirmasi
         </button>
+          </template>
+          <template x-if="dataDetail.payment_proof != '' && dataDetail.payment_proof != null && dataDetail.payment_proof != undefined">
+            <button @click="handlePaymentProof('accepted')"
+              class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-teal-500 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-teal-400 focus:outline-none focus:shadow-outline-purple"
+            >
+              Ya, Konfirmasi
+            </button>
+          </template>
+        
       </footer>
     </div>
   </div>
