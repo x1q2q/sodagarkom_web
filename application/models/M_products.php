@@ -10,7 +10,7 @@ class M_products extends CI_Model {
 		return $query->result();
 	}
 	public function get_join(){
-		$this->db->select('p.*, c.name as name_category');
+		$this->db->select('p.*, c.name as category_name');
 	    $this->db->from('products p');
 	    $this->db->join('categories c','c.id=p.category_id');
 	    $this->db->order_by('p.id','desc');
@@ -30,8 +30,11 @@ class M_products extends CI_Model {
 		return $query;
 	}
 	public function get_detail($data){
-		$this->db->from($this->tabel_name)
-				 ->where($data);
+		$this->db->select('p.*, c.name as category_name');
+	    $this->db->from('products p');
+	    $this->db->join('categories c','c.id=p.category_id');
+	    $this->db->where($data);
+	    $this->db->order_by('p.id','desc');
 		$query = $this->db->get();
 		return $query;
 	}

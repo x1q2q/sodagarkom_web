@@ -385,7 +385,7 @@
             <tr x-show="checkView(index + 1)" class="text-gray-700 dark:text-gray-400">
               <td class="px-4 py-3 text-sm" x-text="index+1"></td>
               <td class="px-4 py-3 text-sm">
-                <span x-text="item.name_category"></span>
+                <span x-text="item.category_name"></span>
               </td>
               <td class="px-4 py-3 text-sm">
                 <span x-text="item.name"></span>
