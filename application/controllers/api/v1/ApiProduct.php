@@ -37,13 +37,13 @@ class ApiProduct extends RESTController {
         	}
         }else{
         	$where = array('p.id' => $id);
-        	$products = $this->m_products->get_detail($where)->result();
-        	if($products){
+        	$product = $this->m_products->get_detail_join($where)->result();
+        	if($product){
         		$this->response(
-        			general_response('ok','success get detail product',$products), 200);
+        			general_response('ok','success get detail product',$product), 200);
         	}else{
         		$this->response(
-        			general_response('false','Detail product not found',$products), 404);
+        			general_response('false','Detail product not found',$product), 404);
         	}
         }
     }

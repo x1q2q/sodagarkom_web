@@ -30,6 +30,12 @@ class M_products extends CI_Model {
 		return $query;
 	}
 	public function get_detail($data){
+		$this->db->from($this->tabel_name)
+				 ->where($data);
+		$query = $this->db->get();
+		return $query;
+	}
+	public function get_detail_join($data){
 		$this->db->select('p.*, c.name as category_name');
 	    $this->db->from('products p');
 	    $this->db->join('categories c','c.id=p.category_id');

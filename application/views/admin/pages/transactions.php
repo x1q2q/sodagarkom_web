@@ -484,7 +484,7 @@
                 <span x-text="details.quantity"></span>
               </td>
               <td class="px-4 py-3 text-sm">
-                <span x-text="convertToRupiah(details.price)"></span>
+                <span x-text="convertToRupiah(details.total_price)"></span>
               </td>
             </tr>
           </template>

@@ -27,4 +27,19 @@ class M_categories extends CI_Model {
 		$query = $this->db->get();
 		return $query;
 	}
+	public function get_join(){
+		$data = $this->db->select('categories.id, categories.name, categories.description, categories.image_thumb, products.id as product_id, products.name as product_name, products.description as product_description, products.price as product_price, products.stock_temporary as product_stock_temporary, products.image_thumb as product_image_thumb')
+                       ->from('categories')
+                       ->join('products', 'products.category_id = categories.id', 'left')
+                       ->get();
+	    return $data;
+	}
+	public function get_detail_join($data){
+		$data = $this->db->select('categories.id, categories.name, categories.description, categories.image_thumb, products.id as product_id, products.name as product_name, products.description as product_description, products.price as product_price, products.stock_temporary as product_stock_temporary, products.image_thumb as product_image_thumb')
+                       ->from('categories')
+                       ->join('products', 'products.category_id = categories.id', 'left')
+                       ->where($data)
+                       ->get();
+		return $data;
+	}
 }

@@ -57,5 +57,11 @@ $route['api/v1/products'] = 'api/v1/apiproduct';
 $route['api/v1/product/(:num)']['GET'] = 'api/v1/apiproduct/$1';
 $route['api/v1/product']['DELETE'] = 'api/v1/apiproduct/$1';
 
+$route['api/v1/categories'] = 'api/v1/apicategory';
+$route['api/v1/category/(:num)']['GET'] = 'api/v1/apicategory/$1';
+
+$route['api/v1/transactions/(:num)/(:any)']['GET'] = 'api/v1/apitransaction/$1/$2';
+$route['api/v1/transaction/(:num)/(:any)/(:num)']['GET'] = 'api/v1/apitransaction/$1/$2/$3';
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
