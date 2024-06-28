@@ -29,7 +29,6 @@ class M_transactions extends CI_Model {
 	    $this->db->where($where);
 	    $this->db->order_by('transactions.id','desc');
 	    $data = $this->db->get()->result();
-	    // select transactions.*, products.id as product_id, products.name, products.price, transaction_details.quantity, customers.username from transactions join transaction_details on transactions.id=transaction_details.transaction_id join customers on transactions.customer_id=customers.id join products on transaction_details.product_id=products.id where customers.id=7;
 	    return $data;
 	}
 	public function get_transaction_detail($transaction_id){

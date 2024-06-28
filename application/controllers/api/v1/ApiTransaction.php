@@ -100,10 +100,18 @@ class ApiTransaction extends RESTController {
         			general_response('false','Detail transaction not found',$transaction), 404);
         	}
         }
-
-        // $data = array('user_id' => $user_id, 'trx_id' => $trx_id, 'filter' => $filter);
-        // $this->response(
-        // 			general_response('ok','Success',$data), 200);
+    }
+    public function filter_get(){
+    	// http://localhost/sodagarkom_web/api/v1/transaction/filters
+    	$data = array(
+    		['id' => '1', 'name' => 'all', 'display' => 'Semua'],
+    		['id' => '2', 'name' => 'accepted', 'display' => 'Selesai'],
+    		['id' => '3', 'name' => 'pending', 'display' => 'Pending'],
+    		['id' => '4', 'name' => 'rejected', 'display' => 'Dibatalkan'],
+    		['id' => '5', 'name' => 'reserved', 'display' => 'Perlu Upload']
+    	);
+        $this->response(
+        			general_response('ok','Success all filter transactions',$data), 200);
     }
 
 }
