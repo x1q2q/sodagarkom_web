@@ -34,9 +34,13 @@ class ApiTransaction extends RESTController {
         	$transaction_data = [];
         	foreach ($selected_transaction as $trx) {
         		if(!isset($transaction_data[$trx->id])){
+        			$date_parsed = get_waktu($trx->created_at, 'Ymd');
+        			$code = "#TRX-".$trx->id."-".$date_parsed;
         			$transaction_data[$trx->id] = [
         				'id' => $trx->id,
+        				'code' => $code,
         				'total_amount'=>$trx->total_amount,
+        				'total_amount_product' => 0,
         				'status'=> $trx->status,
         				'created_at'=>$trx->created_at,
         				'customer_name'=>$trx->customer_name,
@@ -50,15 +54,20 @@ class ApiTransaction extends RESTController {
 			            'product_id' => $trx->product_id,
 			            'product_name' => $trx->product_name,
 			            'product_price' => $trx->product_price,
+			            'product_image' => $trx->product_image,
 			            'product_quantity' => $trx->product_quantity,
 			            'total_price' => $trx->total_price
 			        ];
+			        $transaction_data[$trx->id]['total_amount_product'] += $trx->total_price;
         		}
         	}
         	$transactions = array_values($transaction_data);
-        	if($transactions){
+        	if(count($transactions) > 0){
         		$this->response(
-        			general_response('ok','success get all data transaction by user id',$transactions), 200);
+        			general_response('ok','success get all data transactions filter by user id',$transactions), 200);
+        	}else if(count($transactions) == 0){
+        		$this->response(
+        			general_response('ok','empty data transactions filter',$transactions), 200);
         	}else{
         		$this->response(
         			general_response('false','No datas on transactions id',$transactions), 404);
@@ -70,9 +79,13 @@ class ApiTransaction extends RESTController {
         	$transaction_data = [];
         	foreach ($selected_transaction as $trx) {
         		if(!isset($transaction_data[$trx->id])){
+        			$date_parsed = get_waktu($trx->created_at, 'Ymd');
+        			$code = "#TRX-".$trx->id."-".$date_parsed;
         			$transaction_data[$trx->id] = [
         				'id' => $trx->id,
+        				'code' => $code,
         				'total_amount'=>$trx->total_amount,
+        				'total_amount_product' => 0,
         				'status'=> $trx->status,
         				'created_at'=>$trx->created_at,
         				'customer_name'=>$trx->customer_name,
@@ -86,9 +99,11 @@ class ApiTransaction extends RESTController {
 			            'product_id' => $trx->product_id,
 			            'product_name' => $trx->product_name,
 			            'product_price' => $trx->product_price,
+			            'product_image' => $trx->product_image,
 			            'product_quantity' => $trx->product_quantity,
 			            'total_price' => $trx->total_price
 			        ];
+			        $transaction_data[$trx->id]['total_amount_product'] += $trx->total_price;
         		}
         	}
         	$transaction = array_values($transaction_data);
@@ -104,11 +119,11 @@ class ApiTransaction extends RESTController {
     public function filter_get(){
     	// http://localhost/sodagarkom_web/api/v1/transaction/filters
     	$data = array(
-    		['id' => '1', 'name' => 'all', 'display' => 'Semua'],
-    		['id' => '2', 'name' => 'accepted', 'display' => 'Selesai'],
-    		['id' => '3', 'name' => 'pending', 'display' => 'Pending'],
-    		['id' => '4', 'name' => 'rejected', 'display' => 'Dibatalkan'],
-    		['id' => '5', 'name' => 'reserved', 'display' => 'Perlu Upload']
+    		['id' => 'all', 'name' => 'Semua'],
+    		['id' => 'accepted', 'name' => 'Selesai'],
+    		['id' => 'pending', 'name' => 'Pending'],
+    		['id' => 'rejected', 'name' => 'Dibatalkan'],
+    		['id' => 'reserved', 'name' => 'Perlu Upload']
     	);
         $this->response(
         			general_response('ok','Success all filter transactions',$data), 200);

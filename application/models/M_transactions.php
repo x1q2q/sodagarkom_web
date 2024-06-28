@@ -21,7 +21,7 @@ class M_transactions extends CI_Model {
 	    return $data;
 	}
 	public function get_transaction_detail_join($where){
-		$this->db->select('transactions.*, products.id as product_id, products.name as product_name, products.price as product_price, transaction_details.quantity as product_quantity, transaction_details.total_price as total_price, customers.username as customer_name');
+		$this->db->select('transactions.*, products.id as product_id, products.name as product_name, products.price as product_price, products.image_thumb as product_image, transaction_details.quantity as product_quantity, transaction_details.total_price as total_price, customers.username as customer_name');
 		$this->db->from('transactions');
 	    $this->db->join('transaction_details','transaction_details.transaction_id=transactions.id');
 	    $this->db->join('customers','transactions.customer_id=customers.id');

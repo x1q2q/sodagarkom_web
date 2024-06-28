@@ -66,7 +66,7 @@ $route['api/v1/transaction/(:num)/(:any)/(:num)']['GET'] = 'api/v1/apitransactio
 
 $route['api/v1/customer/(:num)']['GET'] = 'api/v1/apicustomer/$1';
 
-$route['api/v1/cart/(:num)']['GET'] = 'api/v1/apicart/$1';
+$route['api/v1/carts/(:num)']['GET'] = 'api/v1/apicart/$1';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
