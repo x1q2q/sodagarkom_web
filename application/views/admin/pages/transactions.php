@@ -41,6 +41,7 @@
             'payment_proof': item.payment_proof,
             'customer_name': item.customer_name,
             'total_amount': item.total_amount,
+            'total_shipping':item.total_shipping,
             'created_at':item.created_at
           }
       },
@@ -466,35 +467,45 @@
           Berikut detail transaksi dari <b><span x-text="dataDetail.customer_name"></span></b> pada tanggal <span x-text="dataDetail.created_at"></span>
         </p>
       </div>
-      <table class="w-full whitespace-wrap table-auto border dark:border-gray-700">
-        <thead>
-            <tr class="rounded-md text-xs font-semibold border-t tracking-wide text-left text-white uppercase border-b dark:border-gray-700 bg-purple-600">
-              <th class="p-2">Produk</th>
-              <th class="p-2">Kuantitas</th>
-              <th class="p-2">Harga Total</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-          <template x-for="details in dataDetailTransactions">
-            <tr class="text-gray-700 dark:text-gray-400">
-              <td class="px-4 py-3 text-sm">
-                <span x-text="details.product_name"></span>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                <span x-text="details.quantity"></span>
-              </td>
-              <td class="px-4 py-3 text-sm">
-                <span x-text="convertToRupiah(details.total_price)"></span>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
+      <div  style="max-height: 280px!important;overflow-y: auto!important;">
+        <table class="w-full whitespace-wrap border dark:border-gray-700">
+          <thead>
+              <tr class="rounded-md text-xs font-semibold border-t tracking-wide text-left text-white uppercase border-b dark:border-gray-700 bg-purple-600">
+                <th class="p-2">Produk</th>
+                <th class="p-2">Kuantitas</th>
+                <th class="p-2">Harga Total</th>
+              </tr>
+          </thead>
+          <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800" >
+            <template x-for="details in dataDetailTransactions">
+              <tr class="text-gray-700 dark:text-gray-400">
+                <td class="px-4 py-3 text-sm">
+                  <span x-text="details.product_name"></span>
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  <span x-text="details.quantity"></span>
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  <span x-text="convertToRupiah(details.total_price)"></span>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
       <table class="w-full mt-2 whitespace-wrap table-auto border dark:border-gray-700">
         <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+          <tr class="text-xs font-semibold border-t tracking-wide text-left tuppercase border-b dark:border-gray-700">
+            <td class="px-4 py-3 text-sm bg-gray-100">Total Harga (<span x-text="dataDetailTransactions.length"></span> item)</td>
+            <td class="px-4 py-3 text-sm dark:text-white" style="text-align:right;"> <span x-text="sumAll(dataDetailTransactions)"></span></td>
+          </tr>
+          <tr class="text-xs font-semibold border-t tracking-wide text-left tuppercase border-b dark:border-gray-700">
+            <td class="px-4 py-3 text-sm bg-gray-100">Biaya Ongkos Kirim</td>
+            <td class="px-4 py-3 text-sm dark:text-white" style="text-align:right;" x-text="convertToRupiah(parseInt(dataDetail.total_shipping))"></td>
+          </tr>
          <tr class="text-xs font-semibold border-t tracking-wide text-left tuppercase border-b dark:border-gray-700">
             <td class="px-4 py-3 text-sm bg-gray-100">Total Pembayaran Transaksi</td>
-            <td class="px-4 py-3 text-sm dark:text-white" x-text="convertToRupiah(parseInt(dataDetail.total_amount))"></td>
+            <td class="px-4 py-3 text-sm dark:text-white" style="text-align:right;" x-text="convertToRupiah(parseInt(dataDetail.total_amount))"></td>
           </tr>
         </tbody>
       </table>
