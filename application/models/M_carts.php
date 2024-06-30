@@ -22,7 +22,7 @@ class M_carts extends CI_Model {
 		return $query;
 	}
 	public function get_detail_join($data){
-		$data = $this->db->select('carts.*, products.name as product_name, products.price as product_price, products.image_thumb as product_image, categories.name as category_name')
+		$data = $this->db->select('carts.*, products.name as product_name, products.price as product_price, products.stock_temporary as stock, products.image_thumb as product_image, categories.name as category_name')
                ->from('carts')
                ->join('products', 'carts.product_id = products.id')
                ->join('categories', 'products.category_id = categories.id')

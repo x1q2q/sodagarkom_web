@@ -39,13 +39,14 @@ class ApiTransaction extends RESTController {
         			$transaction_data[$trx->id] = [
         				'id' => $trx->id,
         				'code' => $code,
-        				'total_amount'=>$trx->total_amount,
+        				'total_amount'=>intval($trx->total_amount),
         				'total_amount_product' => 0,
-        				'total_shipping' => $trx->total_shipping,
+        				'total_shipping' =>  intval($trx->total_shipping),
         				'status'=> $trx->status,
         				'created_at'=>$trx->created_at,
         				'customer_name'=>$trx->customer_name,
         				'customer_id'=>$trx->customer_id,
+        				'payment_method' => $trx->payment_method,
         				'payment_proof'=>$trx->payment_proof,
         				'products'=> []
         			];
@@ -85,13 +86,14 @@ class ApiTransaction extends RESTController {
         			$transaction_data[$trx->id] = [
         				'id' => $trx->id,
         				'code' => $code,
-        				'total_amount'=>$trx->total_amount,
+        				'total_amount'=> intval($trx->total_amount),
         				'total_amount_product' => 0,
-        				'total_shipping' => $trx->total_shipping,
+        				'total_shipping' => intval($trx->total_shipping),
         				'status'=> $trx->status,
         				'created_at'=>$trx->created_at,
         				'customer_name'=>$trx->customer_name,
         				'customer_id'=>$trx->customer_id,
+        				'payment_method' => $trx->payment_method,
         				'payment_proof'=>$trx->payment_proof,
         				'products'=> []
         			];
@@ -120,7 +122,7 @@ class ApiTransaction extends RESTController {
     }
     public function filter_get(){
     	// http://localhost/sodagarkom_web/api/v1/transaction/filters
-    	$data = array(
+    	$filters = array(
     		['id' => 'all', 'name' => 'Semua'],
     		['id' => 'accepted', 'name' => 'Selesai'],
     		['id' => 'pending', 'name' => 'Pending'],
@@ -128,7 +130,62 @@ class ApiTransaction extends RESTController {
     		['id' => 'reserved', 'name' => 'Perlu Upload']
     	);
         $this->response(
-        			general_response('ok','Success all filter transactions',$data), 200);
+        			general_response('ok','Success all filter transactions',$filters), 200);
+    }
+    function calculateTotalPrice($carts) {
+	    $totalPrice = 0;
+	    foreach ($carts as $cart) {
+	        $totalPrice += $cart->quantity * $cart->product_price;
+	    }
+	    return $totalPrice;
+	}
+    public function confirm_get($user_id){
+    	// http://localhost/sodagarkom_web/api/v1/confirm/[user_id]
+    	$this->load->model('m_carts');
+
+    	$payment_method = 'Transfer Manual';
+    	$payment_method_text = "Silahkan transfer manual ke nomer rekening berikut: 
+    	- BRI (+62) 820000213291231, a.n Aleksander Grahambell.
+    	- BCA (+46) 8394238022342, a.n Aleksander Grahambell.
+    	- BNI  (+46) 8394238022342, a.n Aleksander Grahambell.";
+    	$default_total_shipping = 35000;
+
+    	$customer = $this->m_customers->get_detail(array('id'=>$user_id))->result();
+    	$where = array('customer_id' => $user_id, 'status' => 'active');
+    	$carts = $this->m_carts->get_detail_join($where);
+    	$carts_quantity = $carts->num_rows();
+    	$carts_price =$this->calculateTotalPrice($carts->result());
+
+    	$trx_confirmation = array(
+    		'customer_id' => $user_id,
+    		'customer_fullname' => $customer[0]->full_name,
+    		'customer_address' => $customer[0]->address,
+    		'payment_method' => $payment_method,
+    		'payment_method_text' => $payment_method_text,
+    		'total_shipping' => $default_total_shipping,
+    		'total_cart_qty' => $carts_quantity,
+    		'total_cart_price' => $carts_price,
+    		'total_amount' => $carts_price + $default_total_shipping
+    	);
+    	if($trx_confirmation){
+    		$this->response(
+    			general_response('ok','Success get transaction confirm detail',$trx_confirmation), 200);
+    	}else{
+    		$this->response(
+    			general_response('false','Detail confirm transaction not found',$trx_confirmation), 404);
+    	}
+    }
+    public function update_put(){
+    	$data = array('status' => $this->put('status'));
+    	$where = array('id' => $this->put('transaction_id'));
+    	$update = $this->m_transactions->update($data, $where);
+    	if($update){
+    		$this->response(
+    			general_response('ok','Success update transaction',[]), 200);
+    	}else{
+    		$this->response(
+    			general_response('false','Error update transaction',[]), 404);
+    	}
     }
 
 }

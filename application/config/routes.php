@@ -63,6 +63,9 @@ $route['api/v1/category/(:num)']['GET'] = 'api/v1/apicategory/$1';
 $route['api/v1/transaction/filters']['GET'] = 'api/v1/apitransaction/filter';
 $route['api/v1/transactions/(:num)/(:any)']['GET'] = 'api/v1/apitransaction/$1/$2';
 $route['api/v1/transaction/(:num)/(:any)/(:num)']['GET'] = 'api/v1/apitransaction/$1/$2/$3';
+$route['api/v1/transaction/confirm/(:num)']['GET'] = 'api/v1/apitransaction/confirm/$1';
+
+$route['api/v1/transaction/update']['PUT'] = 'api/v1/apitransaction/update';
 
 $route['api/v1/customer/(:num)']['GET'] = 'api/v1/apicustomer/$1';
 

@@ -72,7 +72,7 @@ CREATE TABLE `carts` (
   KEY `product_id` (`product_id`),
   CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
   CONSTRAINT `carts_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,7 +81,7 @@ CREATE TABLE `carts` (
 
 LOCK TABLES `carts` WRITE;
 /*!40000 ALTER TABLE `carts` DISABLE KEYS */;
-INSERT INTO `carts` VALUES (1,10,3,2,'active','2024-06-26 07:42:47');
+INSERT INTO `carts` VALUES (1,9,3,2,'active','2024-06-26 07:42:47'),(4,9,4,3,'active','2024-06-28 06:29:10'),(5,9,5,2,'active','2024-06-28 06:29:21');
 /*!40000 ALTER TABLE `carts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +194,7 @@ CREATE TABLE `transaction_details` (
   KEY `transaction_details_ibfk_2` (`product_id`),
   CONSTRAINT `transaction_details_ibfk_1` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`) ON DELETE CASCADE,
   CONSTRAINT `transaction_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,7 +203,7 @@ CREATE TABLE `transaction_details` (
 
 LOCK TABLES `transaction_details` WRITE;
 /*!40000 ALTER TABLE `transaction_details` DISABLE KEYS */;
-INSERT INTO `transaction_details` VALUES (1,1,8,2,250000),(3,2,8,1,125000),(4,2,4,1,2800000),(5,11,113,2,40000000),(6,11,5,1,3000000),(7,3,4,1,2800000),(8,3,3,2,5000000);
+INSERT INTO `transaction_details` VALUES (1,1,8,2,250000),(3,2,8,1,125000),(4,2,4,1,2800000),(5,11,113,2,40000000),(6,11,5,1,3000000),(7,3,4,1,2800000),(8,3,3,2,5000000),(9,12,3,3,7500000),(10,12,4,2,5600000),(11,12,113,1,20000000);
 /*!40000 ALTER TABLE `transaction_details` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -218,13 +218,15 @@ CREATE TABLE `transactions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) DEFAULT NULL,
   `total_amount` bigint(20) NOT NULL,
-  `payment_proof` varchar(255) DEFAULT NULL,
-  `status` enum('reserved','pending','accepted','rejected') DEFAULT 'pending',
+  `total_shipping` int(11) NOT NULL DEFAULT 35000,
+  `payment_method` varchar(255) NOT NULL,
+  `payment_proof` varchar(255) DEFAULT 'transfer manual',
+  `status` enum('reserved','pending','accepted','rejected') DEFAULT 'reserved',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `transactions_ibfk_1` (`customer_id`),
   CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -233,7 +235,7 @@ CREATE TABLE `transactions` (
 
 LOCK TABLES `transactions` WRITE;
 /*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-INSERT INTO `transactions` VALUES (1,10,250000,'bukti1.jpg','accepted','2024-06-13 06:09:39'),(2,7,4925000,'bukti2.png','accepted','2024-06-14 06:10:03'),(3,9,7800000,'bukti3.png','rejected','2024-06-13 06:10:11'),(5,8,190000,NULL,'reserved','2024-06-13 15:59:52'),(6,6,350000,'bukti3.png','pending','2024-06-15 06:39:24'),(7,5,4000000,'','reserved','2024-06-14 07:10:11'),(8,4,4500000,'','reserved','2024-06-12 06:41:40'),(9,3,150000,'','reserved','2024-05-14 07:10:11'),(10,2,150000,'','reserved','2024-05-14 07:10:11'),(11,1,43000000,'bukti2.png','accepted','2023-06-14 07:10:11');
+INSERT INTO `transactions` VALUES (1,10,250000,35000,'transfer manual','bukti1.jpg','accepted','2024-06-13 06:09:39'),(2,7,4925000,35000,'transfer manual','bukti2.png','accepted','2024-06-14 06:10:03'),(3,9,7835000,35000,'transfer manual','bukti3.png','rejected','2024-06-13 06:10:11'),(5,8,190000,35000,'transfer manual',NULL,'reserved','2024-06-13 15:59:52'),(6,6,350000,35000,'transfer manual','bukti3.png','pending','2024-06-15 06:39:24'),(7,5,4000000,35000,'transfer manual','','reserved','2024-06-14 07:10:11'),(8,4,4500000,35000,'transfer manual','','reserved','2024-06-12 06:41:40'),(9,3,150000,35000,'transfer manual','','reserved','2024-05-14 07:10:11'),(10,2,150000,35000,'transfer manual','','reserved','2024-05-14 07:10:11'),(11,1,43000000,35000,'transfer manual','bukti2.png','accepted','2023-06-14 07:10:11'),(12,9,33135000,35000,'transfer manual','','','2024-06-28 01:54:29');
 /*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -355,4 +357,4 @@ USE `sodagarkom_db`;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-28  8:51:29
+-- Dump completed on 2024-06-30 12:26:19
