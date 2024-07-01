@@ -6,7 +6,7 @@ class M_categories extends CI_Model {
 
 	public function get_all(){
 		$query = $this->db->from($this->tabel_name)
-				->order_by('id','desc')->get();
+				->order_by('id','asc')->get();
 		return $query->result();
 	}
 	public function insert($data){

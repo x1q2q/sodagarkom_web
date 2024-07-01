@@ -27,20 +27,7 @@ class Customers extends CI_Controller {
 		$this->load_templates($data);
 	}
 
-	public function validate_duplicate($field, $value){
-		// field between [username, email] return true if its duplicate/same value
-		$where = array($field => $value);
-		$rows = $this->m_customers->get_detail($where)->result();
-		return (count($rows) > 0);
-	}
-	public function validate_oldval($field, $current_val, $id){
-		// if email / username updated is different value from old data
-		// first to checking duplicate email (with some condition)
-		$where_old_val = array('id' => $id);
-		$old_val = $this->m_customers->get_detail($where_old_val)->result_array();
-		$old_field_val = $old_val[0][$field]; // between [username, email]
-		return ($current_val != $old_field_val);
-	}
+	
 	
 	public function insert(){
 		// we can use this
@@ -53,17 +40,17 @@ class Customers extends CI_Controller {
 
 		$username		= test_input($request->username);
 		$email 			= test_input($request->email);
-		$password		= md5($request->password);
+		$password		= password_hash($request->password, PASSWORD_DEFAULT);
 		$full_name 		= test_input($request->full_name);
 		$address 		= test_input($request->address);
 		$phone 			= test_input($request->phone);	
 
 		// first to checking duplicate email
-		if($this->validate_duplicate('email',$email)){
+		if(validate_duplicate('email',$email)){
 			return $this->output->set_content_type('application/json')
 		        ->set_output(json_encode(array('code' => 400, 'status' => 'error','message' => 'Email sudah terdaftar pada sistem')));
 		// second to checking duplicate username
-		}else if($this->validate_duplicate('username',$username)){
+		}else if(validate_duplicate('username',$username)){
 			return $this->output->set_content_type('application/json')
 		        ->set_output(json_encode(array('code' => 400, 'status' => 'error','message' => 'Username sudah terdaftar pada sistem')));
 		}else if(validate($username) && validate($email) && validate($password) && validate($full_name) && validate($address) && validate($phone)){
@@ -100,12 +87,12 @@ class Customers extends CI_Controller {
 		$address 		= test_input($request->address);
 		$phone 			= test_input($request->phone);
 
-		if($this->validate_oldval('email', $email, $id) && $this->validate_duplicate('email',$email)){
+		if(validate_oldval('email', $email, $id) && validate_duplicate('email',$email)){
 			return $this->output->set_content_type('application/json')
 		        ->set_output(json_encode(array('code' => 400, 'status' => 'error','message' => 'Email sudah terdaftar pada sistem')));
 
 		// second to checking duplicate username (with some condition)
-		}else if($this->validate_oldval('username', $username, $id) && $this->validate_duplicate('username',$username)){
+		}else if(validate_oldval('username', $username, $id) && validate_duplicate('username',$username)){
 			return $this->output->set_content_type('application/json')
 		        ->set_output(json_encode(array('code' => 400, 'status' => 'error','message' => 'Username sudah terdaftar pada sistem')));
 		}else if(validate($username) && validate($email) && validate($full_name) && validate($address) && validate($phone)){

@@ -41,8 +41,14 @@ class Categories extends CI_Controller {
 				'description' => $description
 			);
 
+			$dir = './assets/uploads/categories';
+			$content_directory = FCPATH . $dir;
+			if (!is_dir($content_directory)) {
+			    mkdir($content_directory, 0777, true);
+			}
+
 			if(!empty($_FILES['files']['name'])){
-				$config['upload_path']          = './assets/uploads/categories';
+				$config['upload_path']          = $content_directory;
 				$config['allowed_types']        = 'JPG|jpg|png|jpeg';
 				$config['max_size']             = 2048; // maks 2mb
 				$this->load->library('upload',$config);
@@ -76,9 +82,14 @@ class Categories extends CI_Controller {
 				'name' => $name,
 				'description' => $description
 			);
+			$dir = './assets/uploads/categories';
+			$content_directory = FCPATH . $dir;
+			if (!is_dir($content_directory)) {
+			    mkdir($content_directory, 0777, true);
+			}
 
 			if(!empty($_FILES['edit_files']['name'])){
-				$config['upload_path']          = './assets/uploads/categories';
+				$config['upload_path']          = $content_directory;
 				$config['allowed_types']        = 'JPG|jpg|png|jpeg';
 				$config['max_size']             = 2048; // maks 2mb
 				$this->load->library('upload',$config);

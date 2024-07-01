@@ -27,6 +27,7 @@ class M_carts extends CI_Model {
                ->join('products', 'carts.product_id = products.id')
                ->join('categories', 'products.category_id = categories.id')
                ->where($data)
+               ->order_by('carts.id','desc')
                ->get();
 		return $data;
 	}

@@ -47,21 +47,4 @@ class ApiProduct extends RESTController {
         	}
         }
     }
-    public function index_delete(){
-    	// http://localhost/sodagarkom_web/api/v1/product ['delete methods']['body x-www-form-urlencoded with keys id']
-
-    	$id = $this->delete('id');
-    	$where = array('id' => $id);
-		$get_old_data = $this->m_products->get_detail($where)->result();
-		$old_image_file = $get_old_data[0]->image_thumb;
-
-		if($this->m_products->delete($where)){
-			// removing images if its exist
-			if($old_image_file != ''){				
-				$this->remove_old_image($old_image_file);
-			}
-			$this->response(
-        			general_response('ok','Succes deleting product',[]), 201);
-		}
-    }
 }

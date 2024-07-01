@@ -48,8 +48,14 @@ class Products extends CI_Controller {
 				'stock_temporary' => $stock,
 				'category_id' => $category_id
 			);
+			$dir = './assets/uploads/products';
+			$content_directory = FCPATH . $dir;
+			if (!is_dir($content_directory)) {
+			    mkdir($content_directory, 0777, true);
+			}
+
 			if(!empty($_FILES['files']['name'])){
-				$config['upload_path']          = './assets/uploads/products';
+				$config['upload_path']          = $content_directory;
 				$config['allowed_types']        = 'JPG|jpg|png|jpeg';
 				$config['max_size']             = 2048; // maks 2mb
 				$this->load->library('upload',$config);
@@ -90,8 +96,14 @@ class Products extends CI_Controller {
 				'stock_temporary' => $stock,
 				'category_id' => $category_id
 			);
+			$dir = './assets/uploads/products';
+			$content_directory = FCPATH . $dir;
+			if (!is_dir($content_directory)) {
+			    mkdir($content_directory, 0777, true);
+			}
+
 			if(!empty($_FILES['edit_files']['name'])){
-				$config['upload_path']          = './assets/uploads/products';
+				$config['upload_path']          = $content_directory;
 				$config['allowed_types']        = 'JPG|jpg|png|jpeg';
 				$config['max_size']             = 2048; // maks 2mb
 				$this->load->library('upload',$config);

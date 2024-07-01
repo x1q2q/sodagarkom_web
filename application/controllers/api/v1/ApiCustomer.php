@@ -35,4 +35,42 @@ class ApiCustomer extends RESTController {
     			general_response('false','No data on customer id',$customer), 404);
     	}
     }
+   
+    public function update_profile_put(){
+    	$username  = test_input($this->put('username'));
+		$email 	   = test_input($this->put('email'));
+		$id 	   = test_input($this->put('id'));
+		$full_name = test_input($this->put('full_name'));
+		$phone 	   = test_input($this->put('phone'));
+		$address   = test_input($this->put('address'));
+    	// first to checking duplicate email
+    	if(validate_oldval('email', $email, $id) && validate_duplicate('email',$email)){
+		    $this->response(general_response('false','Email sudah terdaftar pada sistem',[]), 409);
+		// second to checking duplicate username (with some condition)
+		}else if(validate_oldval('username', $username, $id) && validate_duplicate('username',$username)){
+			$this->response(general_response('false','Username sudah terdaftar pada sistem',[]), 409);
+		}else if(!is_numeric($phone)){
+			$this->response(general_response('false','Nomor telepon tidak valid. Harus berupa angka!',[]), 400);
+		}else if(validate($username) && validate($email) && validate($full_name) && validate($address) && validate($phone)){
+	    	$data = array(
+	    		'username' => $username,
+	    		'email' => $email,
+	    		'full_name' => $full_name,
+	    		'phone' => $phone,
+	    		'address' => $address
+	    	);
+	    	if($this->put('password') != ''){
+	    		$data['password'] = password_hash($this->put('password'), PASSWORD_DEFAULT);
+	    	}
+	    	$where = array('id' => $id);
+	    	$update = $this->m_customers->update($data, $where);
+	    	if($update){
+	    		$this->response(general_response('ok','Berasil mengupdate data profile',[]), 200);
+	    	}else{
+	    		$this->response(general_response('false','Gagal mengupdate data profile',[]), 500);
+	    	}
+	    }else{
+	    	$this->response(general_response('false','Kolom input data masih kosong',[]), 400);
+	    }
+    }
 }

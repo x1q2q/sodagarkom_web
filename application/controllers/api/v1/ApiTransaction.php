@@ -71,8 +71,7 @@ class ApiTransaction extends RESTController {
         		$this->response(
         			general_response('ok','empty data transactions filter',$transactions), 200);
         	}else{
-        		$this->response(
-        			general_response('false','No datas on transactions id',$transactions), 404);
+        		$this->response(general_response('false','No datas on transactions id',$transactions), 400);
         	}
         }else{
         	$where = array('transactions.customer_id' => $user_id);
@@ -129,8 +128,7 @@ class ApiTransaction extends RESTController {
     		['id' => 'rejected', 'name' => 'Dibatalkan'],
     		['id' => 'reserved', 'name' => 'Perlu Upload']
     	);
-        $this->response(
-        			general_response('ok','Success all filter transactions',$filters), 200);
+        $this->response(general_response('ok','Success all filter transactions',$filters), 200);
     }
     function calculateTotalPrice($carts) {
 	    $totalPrice = 0;
@@ -172,20 +170,110 @@ class ApiTransaction extends RESTController {
     			general_response('ok','Success get transaction confirm detail',$trx_confirmation), 200);
     	}else{
     		$this->response(
-    			general_response('false','Detail confirm transaction not found',$trx_confirmation), 404);
+    			general_response('false','Detail confirm transaction not found',$trx_confirmation), 400);
     	}
     }
-    public function update_put(){
+    public function update_status_put(){
     	$data = array('status' => $this->put('status'));
     	$where = array('id' => $this->put('transaction_id'));
     	$update = $this->m_transactions->update($data, $where);
     	if($update){
     		$this->response(
-    			general_response('ok','Success update transaction',[]), 200);
+    			general_response('ok','Success update status transaction',[]), 200);
     	}else{
     		$this->response(
-    			general_response('false','Error update transaction',[]), 404);
+    			general_response('false','Error update status transaction',[]), 400);
     	}
     }
+    public function upload_image_post(){
+    	// http://localhost/sodagarkom_web/api/v1/transaction/upload_image
+    	// $this->post('keyField')
+    	// $_FILES['file']['name']
+    	if(!empty($_FILES['file']['name'])){
+    		$id = $this->post('transaction_id');
+
+    		$dir = './assets/uploads/payments';
+			$content_directory = FCPATH . $dir;
+			if (!is_dir($content_directory)) {
+			    mkdir($content_directory, 0777, true);
+			}
+
+			$config['upload_path']          = $content_directory;
+			$config['allowed_types']        = 'JPG|jpg|png|jpeg';
+			$config['max_size']             = 2048; // maks 2mb
+			$this->load->library('upload',$config);
+		 	if (!$this->upload->do_upload('file')) {
+		 		$this->response(general_response('false','Error upload ',[]), 500);
+		 		$filename_upload = '';
+			}else{
+				$upload = array('upload_data' => $this->upload->data());
+				$filename_upload = $upload['upload_data']['file_name'];
+
+				$get_old_data = $this->m_transactions->get_detail(array('id' => $id))->result();
+				$old_image_file = $get_old_data[0]->payment_proof;
+				if($old_image_file != '' && $old_image_file != null){						
+					$this->remove_old_image($old_image_file);
+				}
+		 	}
+
+		 	$data = array('payment_proof' => $filename_upload,'status' => 'pending');
+	    	$where = array('id' => $id);
+	    	$update = $this->m_transactions->update($data, $where);
+	    	if($update){
+	    		$this->response(general_response('ok','Success update status transaction',[]), 200);
+	    	}else{
+	    		$this->response(general_response('false','Error upload image payment proof transaction',[]), 500);
+	    	}		 	
+		}else{
+    		$this->response(general_response('false','Error upload image empty',[]), 400);
+    	}	
+    }
+    public function remove_old_image($name_file){
+		$path = FCPATH.'./assets/uploads/payments/'.$name_file;
+		if(unlink($path))
+		{
+		    return true;
+		}
+		return false;
+	}
+	public function checkout_post(){
+		$this->load->model('m_carts');
+		// http://localhost/sodagarkom_web/api/v1/transaction/checkout
+		// $this->post('keyField')
+		
+		// insert into transactions
+		$customer_id = $this->post('customer_id');
+		$trx_data = array(
+			'customer_id' => $customer_id,
+			'total_amount' => $this->post('total_amount'),
+			'total_shipping' => $this->post('total_shipping'),
+			'payment_method' => strtolower($this->post('payment_method')),
+			'payment_proof' => '',
+			'status'	=> 'reserved'
+		);
+		if($this->db->insert('transactions', $trx_data)){
+			$inserted_trx_id = $this->db->insert_id();
+			// loop on active carts tables by [customer_id]
+			// insert into transaction_details values($this->tansaction_id_get(),  $for->product_id, $for->quantity, $for->total_price)
+			$where = array('carts.customer_id' => $customer_id, 'carts.status' => 'active');
+	    	$carts = $this->m_carts->get_detail_join($where)->result();
+			foreach ($carts as $value) {
+				$data = array(
+					'transaction_id' => $inserted_trx_id,
+					'product_id'	 => $value->product_id,
+					'quantity'		 => $value->quantity,
+					'total_price'	 => ($value->product_price * $value->quantity)
+				);
+				$this->db->insert('transaction_details', $data);
+			}
+			// change status carts table[user_id] from active -> completed
+			$update_carts = $this->m_carts->update(array('status' => 'completed'), $where);
+			if($update_carts){
+				$this->response(general_response('ok','Berhasil menambahkan transaksi, silahkan cek di menu transaksi',[]), 201);
+			}else{
+				$this->response(general_response('false','Failed to insert transaction',[]), 500);
+			}
+		}
+	}
 
 }

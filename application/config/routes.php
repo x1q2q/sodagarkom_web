@@ -55,7 +55,6 @@ $route['admin/login'] = 'home/login';
 
 $route['api/v1/products'] = 'api/v1/apiproduct';
 $route['api/v1/product/(:num)']['GET'] = 'api/v1/apiproduct/$1';
-$route['api/v1/product']['DELETE'] = 'api/v1/apiproduct/$1';
 
 $route['api/v1/categories'] = 'api/v1/apicategory';
 $route['api/v1/category/(:num)']['GET'] = 'api/v1/apicategory/$1';
@@ -65,11 +64,17 @@ $route['api/v1/transactions/(:num)/(:any)']['GET'] = 'api/v1/apitransaction/$1/$
 $route['api/v1/transaction/(:num)/(:any)/(:num)']['GET'] = 'api/v1/apitransaction/$1/$2/$3';
 $route['api/v1/transaction/confirm/(:num)']['GET'] = 'api/v1/apitransaction/confirm/$1';
 
-$route['api/v1/transaction/update']['PUT'] = 'api/v1/apitransaction/update';
+$route['api/v1/transaction/update_status']['PUT'] = 'api/v1/apitransaction/update_status';
+$route['api/v1/transaction/upload_image']['POST'] = 'api/v1/apitransaction/upload_image';
+$route['api/v1/transaction/checkout']['POST'] = 'api/v1/apitransaction/checkout';
 
 $route['api/v1/customer/(:num)']['GET'] = 'api/v1/apicustomer/$1';
+$route['api/v1/customer/update_profile']['PUT'] = 'api/v1/apicustomer/update_profile';
 
 $route['api/v1/carts/(:num)']['GET'] = 'api/v1/apicart/$1';
+$route['api/v1/cart/insert']['POST'] = 'api/v1/apicart/insert';
+$route['api/v1/cart/update']['PUT'] = 'api/v1/apicart/update';
+$route['api/v1/cart/delete']['DELETE'] = 'api/v1/apicart/delete';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
