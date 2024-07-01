@@ -130,10 +130,17 @@ class ApiTransaction extends RESTController {
     	);
         $this->response(general_response('ok','Success all filter transactions',$filters), 200);
     }
+    function calculateTotalQty($carts) {
+	    $totalQty = 0;
+	    foreach ($carts as $cart) {
+	        $totalQty += $cart->product_quantity;
+	    }
+	    return $totalQty;
+	}
     function calculateTotalPrice($carts) {
 	    $totalPrice = 0;
 	    foreach ($carts as $cart) {
-	        $totalPrice += $cart->quantity * $cart->product_price;
+	        $totalPrice += $cart->product_quantity * $cart->product_price;
 	    }
 	    return $totalPrice;
 	}
@@ -150,9 +157,11 @@ class ApiTransaction extends RESTController {
 
     	$customer = $this->m_customers->get_detail(array('id'=>$user_id))->result();
     	$where = array('customer_id' => $user_id, 'status' => 'active');
-    	$carts = $this->m_carts->get_detail_join($where);
-    	$carts_quantity = $carts->num_rows();
-    	$carts_price =$this->calculateTotalPrice($carts->result());
+    	$carts = $this->m_carts->get_product_join($where);
+    	$product_on_cart = $carts->result();
+
+    	$carts_quantity = $this->calculateTotalQty($product_on_cart);
+    	$carts_price = $this->calculateTotalPrice($product_on_cart);
 
     	$trx_confirmation = array(
     		'customer_id' => $user_id,
@@ -163,7 +172,8 @@ class ApiTransaction extends RESTController {
     		'total_shipping' => $default_total_shipping,
     		'total_cart_qty' => $carts_quantity,
     		'total_cart_price' => $carts_price,
-    		'total_amount' => $carts_price + $default_total_shipping
+    		'total_amount' => $carts_price + $default_total_shipping,
+    		'products' => $product_on_cart
     	);
     	if($trx_confirmation){
     		$this->response(
@@ -178,13 +188,13 @@ class ApiTransaction extends RESTController {
     	$where = array('id' => $this->put('transaction_id'));
     	$update = $this->m_transactions->update($data, $where);
     	if($update){
-    		$this->response(
-    			general_response('ok','Success update status transaction',[]), 200);
+    		$this->change_stock('rejected',$this->put('transaction_id'));
+    		$this->response(general_response('ok','Success update status transaction',[]), 200);
     	}else{
-    		$this->response(
-    			general_response('false','Error update status transaction',[]), 400);
+    		$this->response(general_response('false','Error update status transaction',[]), 400);
     	}
     }
+    
     public function upload_image_post(){
     	// http://localhost/sodagarkom_web/api/v1/transaction/upload_image
     	// $this->post('keyField')
@@ -209,10 +219,13 @@ class ApiTransaction extends RESTController {
 				$upload = array('upload_data' => $this->upload->data());
 				$filename_upload = $upload['upload_data']['file_name'];
 
-				$get_old_data = $this->m_transactions->get_detail(array('id' => $id))->result();
-				$old_image_file = $get_old_data[0]->payment_proof;
-				if($old_image_file != '' && $old_image_file != null){						
-					$this->remove_old_image($old_image_file);
+				$trx_data_old = $this->m_transactions->get_detail(array('id' => $id));
+				if($trx_data_old->num_rows() > 0){ // if exist then delete
+					$trx_result = $trx_data_old->result();
+					$old_image_file = $trx_result[0]->payment_proof;
+					if($old_image_file != '' && $old_image_file != null){
+						$this->remove_old_image($old_image_file);
+					}
 				}
 		 	}
 
@@ -220,7 +233,7 @@ class ApiTransaction extends RESTController {
 	    	$where = array('id' => $id);
 	    	$update = $this->m_transactions->update($data, $where);
 	    	if($update){
-	    		$this->response(general_response('ok','Success update status transaction',[]), 200);
+	    		$this->response(general_response('ok','berhasil mengupload bukti transfer pembayaran',[]), 200);
 	    	}else{
 	    		$this->response(general_response('false','Error upload image payment proof transaction',[]), 500);
 	    	}		 	
@@ -253,6 +266,7 @@ class ApiTransaction extends RESTController {
 		);
 		if($this->db->insert('transactions', $trx_data)){
 			$inserted_trx_id = $this->db->insert_id();
+			
 			// loop on active carts tables by [customer_id]
 			// insert into transaction_details values($this->tansaction_id_get(),  $for->product_id, $for->quantity, $for->total_price)
 			$where = array('carts.customer_id' => $customer_id, 'carts.status' => 'active');
@@ -266,6 +280,7 @@ class ApiTransaction extends RESTController {
 				);
 				$this->db->insert('transaction_details', $data);
 			}
+			$this->change_stock('reserved', $inserted_trx_id);
 			// change status carts table[user_id] from active -> completed
 			$update_carts = $this->m_carts->update(array('status' => 'completed'), $where);
 			if($update_carts){
@@ -273,6 +288,16 @@ class ApiTransaction extends RESTController {
 			}else{
 				$this->response(general_response('false','Failed to insert transaction',[]), 500);
 			}
+		}
+	}
+	public function change_stock($handleTo, $transaction_id){ // on customer
+		// looping on transaction_details get where transaction id
+		// if reserved (after checkout) ->  stock_temporary = stock_temporary - (qty value on trx)
+		// else if rejected (after cancelling by button) -> stock_temporary = stock_temporary + (qty value on trx)
+		$result = $this->m_transactions->get_trx_detail($transaction_id);
+		foreach($result as $trx_detail){
+			// do update stock_temporary on products
+			$this->m_products->update_stock_customer($handleTo, $trx_detail->quantity, $trx_detail->product_id);
 		}
 	}
 

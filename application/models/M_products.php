@@ -46,7 +46,19 @@ class M_products extends CI_Model {
 	}
 	public function update_stock($handleTo, $qty, $product_id){
 		if($handleTo == 'accepted'){
+			// to create query `set stock=stock-$nilai_qty`
 			$this->db->set('stock', 'stock-'.$qty, FALSE);
+		}else if($handleTo == 'rejected'){
+			$this->db->set('stock_temporary', 'stock_temporary+'.$qty, FALSE);
+		}
+		$this->db->where('id', $product_id);
+		$this->db->update('products');
+	}
+
+	public function update_stock_customer($handleTo, $qty, $product_id){
+		if($handleTo == 'reserved'){
+			// to create query `set stock_temporary=stock_temporary - $nilai_qty`
+			$this->db->set('stock_temporary', 'stock_temporary-'.$qty, FALSE);
 		}else if($handleTo == 'rejected'){
 			$this->db->set('stock_temporary', 'stock_temporary+'.$qty, FALSE);
 		}

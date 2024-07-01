@@ -73,8 +73,8 @@ $route['api/v1/customer/update_profile']['PUT'] = 'api/v1/apicustomer/update_pro
 
 $route['api/v1/carts/(:num)']['GET'] = 'api/v1/apicart/$1';
 $route['api/v1/cart/insert']['POST'] = 'api/v1/apicart/insert';
-$route['api/v1/cart/update']['PUT'] = 'api/v1/apicart/update';
-$route['api/v1/cart/delete']['DELETE'] = 'api/v1/apicart/delete';
+$route['api/v1/cart/update']['PUT'] = 'api/v1/apicart/update_qty';
+$route['api/v1/cart/delete/(:num)']['GET'] = 'api/v1/apicart/delete/$1';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
