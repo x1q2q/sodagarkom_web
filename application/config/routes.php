@@ -76,5 +76,8 @@ $route['api/v1/cart/insert']['POST'] = 'api/v1/apicart/insert';
 $route['api/v1/cart/update']['PUT'] = 'api/v1/apicart/update_qty';
 $route['api/v1/cart/delete/(:num)']['GET'] = 'api/v1/apicart/delete/$1';
 
+$route['api/v1/customer/login']['POST'] = 'api/v1/apicustomer/login';
+$route['api/v1/customer/register']['POST'] = 'api/v1/apicustomer/register';
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

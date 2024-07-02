@@ -72,7 +72,7 @@ CREATE TABLE `carts` (
   KEY `product_id` (`product_id`),
   CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
   CONSTRAINT `carts_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,7 +81,7 @@ CREATE TABLE `carts` (
 
 LOCK TABLES `carts` WRITE;
 /*!40000 ALTER TABLE `carts` DISABLE KEYS */;
-INSERT INTO `carts` VALUES (1,9,3,2,'active','2024-06-26 07:42:47'),(4,9,4,3,'active','2024-06-28 06:29:10'),(5,9,5,2,'active','2024-06-28 06:29:21');
+INSERT INTO `carts` VALUES (46,9,4,1,'completed','2024-07-01 17:13:27'),(47,9,111,1,'completed','2024-07-01 17:13:33'),(48,9,116,1,'completed','2024-07-01 17:13:36'),(50,9,4,2,'completed','2024-07-01 17:19:58'),(52,9,3,1,'completed','2024-07-01 18:11:40'),(53,9,113,2,'completed','2024-07-01 18:11:48'),(54,9,4,2,'completed','2024-07-01 19:18:30'),(55,9,3,2,'completed','2024-07-01 19:18:33'),(56,9,5,2,'completed','2024-07-01 19:18:35'),(57,9,115,2,'completed','2024-07-01 19:18:38'),(58,9,3,2,'completed','2024-07-01 19:34:26'),(59,9,4,2,'completed','2024-07-01 19:34:29'),(60,9,5,2,'completed','2024-07-01 19:34:32'),(61,9,111,2,'completed','2024-07-01 19:34:37'),(62,9,4,2,'active','2024-07-01 19:38:20'),(63,9,3,2,'active','2024-07-01 19:38:22'),(64,9,5,2,'active','2024-07-01 19:38:26'),(65,9,111,2,'active','2024-07-01 19:38:28'),(66,9,113,2,'active','2024-07-02 07:38:04');
 /*!40000 ALTER TABLE `carts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -98,7 +98,7 @@ CREATE TABLE `categories` (
   `description` text DEFAULT NULL,
   `image_thumb` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -107,7 +107,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (3,'Komputer','ini deskripsi kategori2 ini deskripsi kategori2 ini deskripsi kategori2 lorem ipsum banget nih astaga ini deskripsi kategori2 ini deskripsi kategori2 ini deskripsi kategori2 lorem ipsum banget nih astagaini','computer.png'),(4,'Laptop','Deskripsi laptop banget laptopnya','laptop.png'),(5,'CPU','ini deskripsi CPU BOS \nini deskripsi CPU BOS\nini deskripsi CPU BOS ini deskripsi CPU BOS ini deskripsi CPU BOS ini deskripsi CPU BOS ini deskripsi CPU BOS','cpu.png'),(6,'Monitors','ini monitor baru monitor merk mahal ini monitor baru monitor merk mahal banget','monitor.png');
+INSERT INTO `categories` VALUES (3,'Ragam Komputer','Komputer adalah perangkat elektronik yang dapat mengolah data dan menghasilkan informasi dalam berbagai bentuk, seperti teks, gambar, audio, video, atau audio-visual.','computer.png'),(4,'Ragam Laptop','Laptop, atau komputer jinjing, adalah komputer pribadi yang berukuran relatif kecil dan ringan, sehingga sifatnya portabel. Laptop merupakan evolusi dari jenis komputer desktop, di mana semua ukurannya menjadi lebih kecil, mulai dari keyboard, CPU, dan juga monitornya.','laptop.png'),(5,'Ragam CPU','CPU, atau Central Processing Unit, adalah perangkat keras komputer yang menerima dan menjalankan perintah dan data dari perangkat lunak. CPU melakukan semua pekerjaan dari setiap tindakan yang dilakukan komputer, serta menjalankan program.','cpu.png'),(6,'Ragam Monitor','Monitor adalah perangkat keras keluaran (output device system) yang menampilkan informasi dalam bentuk gambar atau tekstual yang telah diproses oleh CPU pada komputer. Monitor juga disebut sebagai layar tampilan komputer.','monitor.png'),(21,'Ragam Keyboard','Keyboard adalah perangkat input yang digunakan untuk memasukkan data ke dalam komputer atau perangkat elektronik lainnya. Keyboard komputer modern biasanya terdiri dari tombol-tombol yang mewakili karakter, angka, simbol, dan fungsi khusus.','keyboard.png');
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -131,7 +131,7 @@ CREATE TABLE `customers` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +140,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (1,'user123','user123@gmail.com','6ad14ba9986e3615423dfca256d04e3f','User Biasa123','karangtengah, pengadegan','08457854354323',1,'2024-06-11 05:28:25'),(2,'bagas123','bagas123@gmail.com','5ffd9bb73b00bce4feeb77e2d12722da','Bagas Adi Saputra','bojongsari, purbalingga','085324329231',1,'2024-06-11 05:29:31'),(3,'user5678910','user567@gmail.com','user567','User Biasa567','Karang Moncol','08324798324',1,'2024-06-11 09:07:21'),(4,'user789','user789@gmail.com','user789','User Biasa789','Karang Joho Jawa Tengah','0849832041',1,'2024-06-11 09:11:34'),(5,'aditbojes','aditbojes@gmail.com','aditbojes123','Aditya Nur Sodiq','Pengadegan, Karang tengah','0874324932',1,'2024-06-11 09:11:34'),(6,'hasangento','hasangento@gmail.com','user1011','User Biasa1011','Babatsari, Purbalingga','083249234',1,'2024-06-11 09:11:34'),(7,'lukmanbojes','lukmanbojes@gmail.com','lukmanbojes123','Luqman Nur khakim','Bojong Serang, Karang tengah','083409234',1,'2024-06-11 09:11:34'),(8,'satya','satyabojes@gmail.com','satyabojes123','Satya Nur Hikmah','Pengadegan, Purbalingga','0823498234',1,'2024-06-11 09:11:34'),(9,'mahesa','mahesabojes@gmail.com','mahesabojes123','Mahesa Jenar','Pengadegan, Karang Tengah RT01/RW11','0898423433',1,'2024-06-11 09:11:34'),(10,'rafiknurf','rafiknurf@gmail.com','rafiknurf123','Rafik Nurf','Kartasura','0834321988',1,'2024-06-11 09:11:34'),(58,'Customer123','rbojjes@gmail.com','3e108c54323bf218f7b8c973bdf4ecbc','Customer bojes123','Alamat customer bojes banget','087575464',1,'2024-06-12 12:26:27');
+INSERT INTO `customers` VALUES (1,'user123','user123@gmail.com','6ad14ba9986e3615423dfca256d04e3f','User Biasa123','karangtengah, pengadegan','08457854354323',1,'2024-06-11 05:28:25'),(2,'bagas123','bagas123@gmail.com','5ffd9bb73b00bce4feeb77e2d12722da','Bagas Adi Saputra','bojongsari, purbalingga','085324329231',1,'2024-06-11 05:29:31'),(3,'user5678910','user567@gmail.com','user567','User Biasa567','Karang Moncol','08324798324',1,'2024-06-11 09:07:21'),(4,'user789','user789@gmail.com','user789','User Biasa789','Karang Joho Jawa Tengah','0849832041',1,'2024-06-11 09:11:34'),(5,'aditbojes','aditbojes@gmail.com','aditbojes123','Aditya Nur Sodiq','Pengadegan, Karang tengah','0874324932',1,'2024-06-11 09:11:34'),(6,'hasangento','hasangento@gmail.com','user1011','User Biasa1011','Babatsari, Purbalingga','083249234',1,'2024-06-11 09:11:34'),(7,'lukmanbojes','lukmanbojes@gmail.com','lukmanbojes123','Luqman Nur khakim','Bojong Serang, Karang tengah','083409234',1,'2024-06-11 09:11:34'),(8,'satya','satyabojes@gmail.com','satyabojes123','Satya Nur Hikmah','Pengadegan, Purbalingga','0823498234',1,'2024-06-11 09:11:34'),(9,'mahesa','mahesa123@gmail.com','$2y$10$10oaeGD1oVEIggg2KeOKPODNlxIohOoc6/dUFQSS.CHE2CM8CFpxi','Mahesa Jenars','Jl Desa Karangtengah, bojong serang 53393','089779796142',1,'2024-06-11 09:11:34'),(63,'piknikcoffee','piknikcoffee@gmail.com','$2y$10$i0n07seNgv86woOQxp8oqeBUzA1LJm/UlKjeXeuoQ593oe0JrJQC2','Piknik Coffee','Jl. Letkol Isdiman Purbalinga Regency','08238942312',0,'2024-07-02 04:59:53'),(64,'coba1','coba1@gmail.com','$2y$10$6uaacTuH6F/FhBH.vPvRBOn3fhDOO7xpqgGfdJTUET90X5nHzaOSe','Coba Aja','Piknik Coffee','088888888',1,'2024-07-02 06:18:00'),(66,'rafiknurf','rbojjes@gmail.com','$2y$10$VJ89t4zAkSluI3pIJc84ZuA9ZHBqmyAANEDsPW8nWKeMZRnkcs/y2','arafik nur fadliansah','karang tengah','085714186920',1,'2024-07-02 08:05:57');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -163,7 +163,7 @@ CREATE TABLE `products` (
   PRIMARY KEY (`id`),
   KEY `products_ibfk_1` (`category_id`),
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -172,7 +172,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (3,4,'Laptop Lenovo','deskripsi laptop lenovo',2500000,90,90,'lenovo.png'),(4,4,'Acer Aspire','deskripsi laptop Acer',2800000,100,100,'acer.jpg'),(5,4,'Laptop ASUS','deskripsi produk laptop asus',3000000,80,80,'asus.jpg'),(8,6,'Monitor bekas murah pisan','monitor bekas pemakaian masih bagus 123',125000,240,240,''),(16,3,'komputer 12','deskripsi komputer12',40000,100,100,''),(17,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(18,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(19,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(20,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(21,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(22,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(23,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(24,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(25,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(26,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(27,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(28,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(29,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(30,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(31,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(32,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(33,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(34,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(35,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(37,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(38,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(39,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(40,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(41,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(42,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(43,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(44,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(45,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(46,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(47,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(48,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(49,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(50,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(51,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(52,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(53,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(54,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(55,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(56,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(57,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(58,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(59,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(60,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(61,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(62,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(63,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(64,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(65,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(66,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(67,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(68,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(69,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(70,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(71,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(72,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(73,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(74,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(75,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(76,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(77,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(78,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(79,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(80,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(81,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(82,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(83,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(84,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(85,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(86,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(87,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(88,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(89,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(90,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(91,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(92,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(93,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(94,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(95,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(96,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(97,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(98,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(99,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(100,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(101,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(102,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(103,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,''),(104,4,'Laptop Asus2','deskripsi asus2',27500000,20,20,''),(105,3,'komputer 13','deskripsi komputer13',50000,120,120,''),(106,3,'komputer 14','deskripsi komputer14',60000,110,110,''),(107,3,'komputer 15','deskripsi komputer15',55000,150,150,''),(108,4,'Laptop Acer1','deskripsi acer1',25000000,10,10,''),(109,4,'Laptop Acer2','deskripsi acer2',35000000,10,10,''),(110,4,'Laptop Acer3','deskripsi acer3',30000000,10,10,''),(111,4,'Laptop Asus1','deskripsi asus1',15000000,15,15,'169082448156011946.jpg'),(113,4,'Macbook M1','macbook orisinil asli bos',20000000,28,28,'macbook.jpg'),(115,4,'Lenovo Thinkpad T440S','laptop lenovo tahan banting banget',5000000,10,10,'aivaib-album-cover.jpg');
+INSERT INTO `products` VALUES (3,4,'Laptop Lenovo','deskripsi laptop lenovo',2500000,90,94,'lenovo.png'),(4,4,'Acer Aspire','deskripsi laptop Acer',2800000,100,104,'acer.jpg'),(5,4,'Laptop ASUS','deskripsi produk laptop asus',3000000,80,84,'asus.jpg'),(111,4,'ASUS A416 (11th Gen Intel)','deskripsi asus1',15000000,15,17,'asus-laptop.png'),(113,4,'Macbook M1','macbook orisinil asli bos',20000000,28,28,'macbook.jpg'),(115,4,'Lenovo Thinkpad T440S','laptop lenovo tahan banting banget',5000000,10,12,'lenovo-thiknpad.jpg'),(116,4,'Laptop Macbook 16','coba deskripsi macbook',18000000,12,12,'macbook16.jpg');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +194,7 @@ CREATE TABLE `transaction_details` (
   KEY `transaction_details_ibfk_2` (`product_id`),
   CONSTRAINT `transaction_details_ibfk_1` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`) ON DELETE CASCADE,
   CONSTRAINT `transaction_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,7 +203,7 @@ CREATE TABLE `transaction_details` (
 
 LOCK TABLES `transaction_details` WRITE;
 /*!40000 ALTER TABLE `transaction_details` DISABLE KEYS */;
-INSERT INTO `transaction_details` VALUES (1,1,8,2,250000),(3,2,8,1,125000),(4,2,4,1,2800000),(5,11,113,2,40000000),(6,11,5,1,3000000),(7,3,4,1,2800000),(8,3,3,2,5000000),(9,12,3,3,7500000),(10,12,4,2,5600000),(11,12,113,1,20000000);
+INSERT INTO `transaction_details` VALUES (4,2,4,1,2800000),(5,11,113,2,40000000),(6,11,5,1,3000000),(7,3,4,1,2800000),(8,3,3,2,5000000),(9,12,3,3,7500000),(10,12,4,2,5600000),(11,12,113,1,20000000),(24,19,3,2,5000000),(25,19,4,3,8400000),(26,19,5,2,6000000),(33,22,116,1,18000000),(34,22,111,1,15000000),(35,22,4,1,2800000),(36,23,113,2,40000000),(37,23,3,1,2500000),(38,23,4,2,5600000);
 /*!40000 ALTER TABLE `transaction_details` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -226,7 +226,7 @@ CREATE TABLE `transactions` (
   PRIMARY KEY (`id`),
   KEY `transactions_ibfk_1` (`customer_id`),
   CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -235,7 +235,7 @@ CREATE TABLE `transactions` (
 
 LOCK TABLES `transactions` WRITE;
 /*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-INSERT INTO `transactions` VALUES (1,10,250000,35000,'transfer manual','bukti1.jpg','accepted','2024-06-13 06:09:39'),(2,7,4925000,35000,'transfer manual','bukti2.png','accepted','2024-06-14 06:10:03'),(3,9,7835000,35000,'transfer manual','bukti3.png','rejected','2024-06-13 06:10:11'),(5,8,190000,35000,'transfer manual',NULL,'reserved','2024-06-13 15:59:52'),(6,6,350000,35000,'transfer manual','bukti3.png','pending','2024-06-15 06:39:24'),(7,5,4000000,35000,'transfer manual','','reserved','2024-06-14 07:10:11'),(8,4,4500000,35000,'transfer manual','','reserved','2024-06-12 06:41:40'),(9,3,150000,35000,'transfer manual','','reserved','2024-05-14 07:10:11'),(10,2,150000,35000,'transfer manual','','reserved','2024-05-14 07:10:11'),(11,1,43000000,35000,'transfer manual','bukti2.png','accepted','2023-06-14 07:10:11'),(12,9,33135000,35000,'transfer manual','','','2024-06-28 01:54:29');
+INSERT INTO `transactions` VALUES (2,7,4925000,35000,'transfer manual','bukti2.png','accepted','2024-06-14 06:10:03'),(3,9,7835000,35000,'transfer manual','1000179722.jpg','pending','2024-06-13 06:10:11'),(5,8,190000,35000,'transfer manual',NULL,'reserved','2024-06-13 15:59:52'),(6,6,350000,35000,'transfer manual','bukti3.png','pending','2024-06-15 06:39:24'),(7,5,4000000,35000,'transfer manual','','reserved','2024-06-14 07:10:11'),(8,4,4500000,35000,'transfer manual','','reserved','2024-06-12 06:41:40'),(9,3,150000,35000,'transfer manual','','reserved','2024-05-14 07:10:11'),(10,2,150000,35000,'transfer manual','','reserved','2024-05-14 07:10:11'),(11,1,43000000,35000,'transfer manual','bukti2.png','accepted','2023-06-14 07:10:11'),(12,9,33135000,35000,'transfer manual','1000182305.jpg','pending','2024-06-28 01:54:29'),(19,9,19435000,35000,'transfer manual','','rejected','2024-07-01 06:29:00'),(22,9,35835000,35000,'transfer manual','','rejected','2024-07-01 17:13:42'),(23,9,48135000,35000,'transfer manual','1000182409.png','pending','2024-07-01 19:04:24');
 /*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -357,4 +357,4 @@ USE `sodagarkom_db`;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-30 12:26:19
+-- Dump completed on 2024-07-02 15:14:27
