@@ -33,7 +33,7 @@ class ApiCategory extends RESTController {
         			general_response('ok','success get all categories',$categories), 200);
         	}else{
         		$this->response(
-        			general_response('false','No datas on categories ',$categories), 404);
+        			general_response('false','No datas on categories ',$categories), 200);
         	}
         }else{
         	// insetad doing 2 query, just use sigle query then loop

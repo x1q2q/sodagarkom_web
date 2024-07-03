@@ -74,7 +74,7 @@ class ApiCart extends RESTController {
 	    		$inserted_cart_id = $this->db->insert_id();
 	    		$where = array('carts.id' => $inserted_cart_id);
 		    	$cart = $this->m_carts->get_detail_join($where)->result();
-		    	$this->response(general_response('ok','Success add product to cart',$cart), 201);
+		    	$this->response(general_response('ok','Berhasil menambahkan produk ke keranjang',$cart), 201);
 	    	}else{
 	    		$this->response(general_response('false','Error add product to cart',$data), 400);
 	    	}

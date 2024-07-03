@@ -29,11 +29,9 @@ class ApiProduct extends RESTController {
         if(empty($id)){
         	$products = $this->m_products->get_join();
         	if($products){
-        		$this->response(
-        			general_response('ok','success get all data products',$products), 200);
+        		$this->response(general_response('ok','success get all data products',$products), 200);
         	}else{
-        		$this->response(
-        			general_response('false','No datas on products',$products), 404);
+        		$this->response(general_response('ok','Products is empty',$products), 200);
         	}
         }else{
         	$where = array('p.id' => $id);
