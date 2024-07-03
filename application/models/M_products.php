@@ -65,4 +65,16 @@ class M_products extends CI_Model {
 		$this->db->where('id', $product_id);
 		$this->db->update('products');
 	}
+	public function product_search($search){
+		$this->db->select('p.*, c.name as category_name');
+	    $this->db->from('products p');
+	    $this->db->join('categories c','c.id=p.category_id');
+	    $this->db->like('p.name', $search);
+		$this->db->or_like('p.description', $search);
+		$this->db->or_like('p.price', $search);
+		$this->db->or_like('c.name', $search);
+	    $this->db->order_by('p.id','desc');
+		$query = $this->db->get();
+		return $query->result();
+    }
 }

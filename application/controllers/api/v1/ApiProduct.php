@@ -47,4 +47,14 @@ class ApiProduct extends RESTController {
         	}
         }
     }
+    public function search_post(){
+    	// http://localhost/sodagarkom_web/api/v1/product/search ['post']
+    	$keyword  = test_input($this->post('keyword'));
+		if(!empty($keyword)){
+			$search_result = $this->m_products->product_search($keyword);
+	    	$this->response(general_response('ok','Berhasil mencari produk ',$search_result), 200);
+		}else{
+    		$this->response(general_response('false','Gagal mencari produk',[]), 404);
+    	}
+    }
 }

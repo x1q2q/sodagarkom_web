@@ -55,6 +55,7 @@ $route['admin/login'] = 'home/login';
 
 $route['api/v1/products'] = 'api/v1/apiproduct';
 $route['api/v1/product/(:num)']['GET'] = 'api/v1/apiproduct/$1';
+$route['api/v1/product/search']['POST'] = 'api/v1/apiproduct/search';
 
 $route['api/v1/categories'] = 'api/v1/apicategory';
 $route['api/v1/category/(:num)']['GET'] = 'api/v1/apicategory/$1';
